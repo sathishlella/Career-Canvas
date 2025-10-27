@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sreeja's Portfolio</title>
+  <meta name="description" content="AI Engineer — NLP · RAG · Analytics" />
+  <style>
+    /* ----------------------------------------------------
+       RESET + ROOT
+    ---------------------------------------------------- */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; color: #e9edf5; background: #05070d; overflow-x: hidden }
+    a { color: #d6f2ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    :root{
+      --ink: #e9edf5;
+      --muted:#aab6d3;
+      --primary:#86f2ff;
+      --accent:#a084ff;
+      --gold:#ffd166;
+      --bg0:#05070d;
+      --bg1:#0b0f1c;
+      --bg2:#0e1425;
+      --glass: rgba(255,255,255,.06);
+      --blur: saturate(120%) blur(10px);
+      --radius: 22px;
+    }
+
+    /* ----------------------------------------------------
+       GLOBAL FX (glows, buttons, chips)
+    ---------------------------------------------------- */
+    .glow { filter: drop-shadow(0 0 32px rgba(160,132,255,.28)) drop-shadow(0 0 64px rgba(134,242,255,.22)); }
+    .btn { display:inline-flex; align-items:center; gap:.6rem; padding:.85rem 1.15rem; border-radius: 999px; border:1px solid rgba(255,255,255,.14); background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); backdrop-filter: var(--blur); color:var(--ink); cursor:pointer; transition:.35s transform, .35s box-shadow; }
+    .btn:hover{ transform: translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,.35), inset 0 0 40px rgba(160,132,255,.18); }
+    .chip { display:inline-flex; gap:.5rem; align-items:center; font-size:.85rem; padding:.45rem .75rem; border-radius:999px; background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); }
+
+    /* ----------------------------------------------------
+       SCROLL-SNAP STEP-ROLL LAYOUT
+    ---------------------------------------------------- */
+    main { height: 100svh; scroll-snap-type: y mandatory; overflow-y: scroll; perspective: 1400px; }
+    section.step { position: relative; min-height: 100svh; scroll-snap-align: start; display:grid; place-items:center; padding: clamp(16px, 4vw, 48px); }
+    .wrap { width: min(1100px, 92vw); margin-inline: auto; }
+
+    /* Page roll illusion: each section is a card that rotates slightly on entry */
+    .card { position: relative; border-radius: var(--radius); background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.12); padding: clamp(20px, 4vw, 48px); box-shadow: 0 30px 80px rgba(0,0,0,.45); transform-style: preserve-3d; will-change: transform, opacity; }
+
+    /* Decorative edges like a page */
+    .card::after { content:""; position:absolute; inset:-2px; border-radius: calc(var(--radius) + 2px); pointer-events:none; background: linear-gradient(120deg, rgba(160,132,255,.18), rgba(134,242,255,.18), rgba(255,209,102,.16)); mix-blend-mode: screen; filter: blur(20px) opacity(.6); z-index:-1; }
+
+    h1 { font-size: clamp(2rem, 5.5vw, 4rem); line-height: 1.05; margin: 0 0 .8rem; letter-spacing: .3px; }
+    h2 { font-size: clamp(1.6rem, 3.6vw, 2.4rem); margin: 0 0 .6rem; }
+    p  { font-size: clamp(1rem, 1.6vw, 1.15rem); color: var(--muted); line-height: 1.65; }
+
+    /* ----------------------------------------------------
+       BACKGROUND MOTION: gradient waves + stars + orbiters
+    ---------------------------------------------------- */
+    .bg { position: fixed; inset: 0; z-index: -5; overflow: hidden; }
+    .bg .gradient { position:absolute; inset:-20%; filter: blur(60px) saturate(130%); opacity:.65; background: radial-gradient(55% 60% at 20% 20%, #2b2f55 0%, rgba(10,16,36,0) 60%),
+                                               radial-gradient(65% 75% at 90% 10%, #1f4259 0%, rgba(10,16,36,0) 70%),
+                                               radial-gradient(80% 80% at 50% 90%, #311a5d 0%, rgba(10,16,36,0) 65%);
+      animation: drift 50s linear infinite alternate; }
+    @keyframes drift { from { transform: translate3d(-4%, -2%, 0) scale(1.05) rotate(0.2deg);} to { transform: translate3d(4%, 2%, 0) scale(1.12) rotate(-0.2deg);} }
+
+    canvas#constellation { position:absolute; inset:0; display:block; opacity:.75; }
+    canvas#robots { position:absolute; inset:0; display:block; pointer-events:none; opacity:.5; }
+    .bg .neural-wave { position:absolute; inset:-10%; filter: blur(24px) saturate(140%); opacity:.35; background: conic-gradient(from 0deg at 50% 50%, #0b6, #63f, #f5b, #0b6); mix-blend-mode: screen; animation: waveSpin 30s linear infinite; }
+    @keyframes waveSpin { to { transform: rotate(360deg) scale(1.1); } }
+
+    .orbiter { position:absolute; width:20vmax; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.2), rgba(255,255,255,0)); mix-blend-mode: screen; animation: orbit 24s linear infinite; }
+    .orbiter:nth-child(1){ top:-10vmax; left:-10vmax; animation-duration:32s; }
+    .orbiter:nth-child(2){ bottom:-8vmax; right:-12vmax; animation-duration:28s; }
+    @keyframes orbit { to { transform: rotate(360deg); } }
+
+    /* ----------------------------------------------------
+       HERO
+    ---------------------------------------------------- */
+    .hero h1 span { display:block; background: linear-gradient(90deg, var(--primary), var(--accent), var(--gold)); -webkit-background-clip:text; background-clip:text; color: transparent; }
+    .hero .meta { display:flex; gap:.8rem; flex-wrap: wrap; margin: 1rem 0 1.5rem; }
+    .hero .cta { display:flex; gap:.8rem; flex-wrap: wrap; }
+
+    /* ----------------------------------------------------
+       PUBLICATIONS (auto-fetch via Crossref when possible)
+    ---------------------------------------------------- */
+    .pub-list { display:grid; gap:16px; margin-top: 18px; }
+    .pub { display:grid; gap:.45rem; padding:16px; border-radius:14px; background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); }
+    .pub small { color: var(--muted); }
+
+    /* ----------------------------------------------------
+       PROJECTS (cards with 3D hover and entrance motion)
+    ---------------------------------------------------- */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 18px; }
+    .project { position:relative; padding:18px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.12); transform-style: preserve-3d; transition: transform .5s ease, box-shadow .5s ease; }
+    .project:hover { transform: translateY(-6px) rotateX(4deg) rotateY(-6deg); box-shadow: 0 30px 60px rgba(0,0,0,.45); }
+    .project h3 { margin:.2rem 0 .4rem; }
+
+    /* ----------------------------------------------------
+       TIMELINE (animated steps to mimic page flip)
+    ---------------------------------------------------- */
+    .timeline { position:relative; margin-top: 10px; }
+    .timeline::before { content:""; position:absolute; left: 12px; top:0; bottom:0; width: 2px; background: linear-gradient(180deg, var(--accent), transparent); opacity:.6; }
+    .event { position: relative; padding-left: 36px; margin: 16px 0; }
+    .event::marker{ content:""; }
+    .event::before { content:""; position:absolute; left:6px; top:.3rem; width: 14px; height:14px; border-radius:50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(160,132,255,.18); }
+
+    /* ----------------------------------------------------
+       FOOTER
+    ---------------------------------------------------- */
+    footer { text-align:center; padding: 24px; color: var(--muted); }
+
+    
+    /* ---------- Transparent Header Bar ---------- */
+    .site-nav{
+      position: fixed; top:0; left:0; right:0; z-index: 100;
+      padding: 10px 0;
+      backdrop-filter: var(--blur);
+      background: rgba(7,10,19,.28); /* transparent glass */
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      transition: background .3s ease, box-shadow .3s ease, border-color .3s ease;
+    }
+    .site-nav.scrolled{
+      background: rgba(7,10,19,.55);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      border-bottom-color: rgba(255,255,255,.18);
+    }
+    .site-nav .nav-inner{
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .site-nav .brand{
+      font-weight: 700; letter-spacing:.4px; font-size: clamp(1rem, 1.6vw, 1.15rem);
+      padding: 8px 12px; border-radius: 12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      color: var(--ink);
+    }
+    .site-nav .brand span{ color: var(--accent); margin-left: 2px; }
+    .site-nav .links{ display:flex; gap: clamp(8px, 2.2vw, 18px); align-items:center; }
+    .site-nav .links a{ padding: 8px 10px; border-radius: 10px; color: var(--ink); text-decoration:none; border:1px solid transparent; }
+    .site-nav .links a:hover{ border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.06); }
+    .site-nav .links a.active{ border-color: rgba(191,233,255,.35); box-shadow: inset 0 0 0 1px rgba(191,233,255,.18); }
+
+    .site-nav .nav-cta{ display:none; margin-left: 10px; }
+    .site-nav .hamburger{ display:none; font-size: 1.25rem; padding: 8px 12px; border-radius: 10px;
+      background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); color: var(--ink); cursor:pointer; }
+
+    /* Mobile sheet menu */
+    
+    /* FORCE-HIDE the sheet when [hidden] is present */
+    .menu-sheet[hidden]{ display: none !important; }
+
+    /* Never show the mobile sheet on desktop */
+    @media (min-width: 861px){
+      .menu-sheet{ display: none !important; }
+    }
+
+    .menu-sheet{ position: fixed; top: 58px; right: 12px; width: min(320px, 92vw);
+      display: grid; gap: 6px; padding: 10px; border-radius: 14px; z-index: 99;
+      background: rgba(7,10,19,.82); backdrop-filter: var(--blur);
+      border:1px solid rgba(255,255,255,.16); box-shadow: 0 20px 50px rgba(0,0,0,.55);
+    }
+    .menu-sheet a{ padding: 10px 12px; border-radius: 10px; border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06);
+      color: var(--ink); text-decoration:none; }
+
+    @media (min-width: 860px){
+      .site-nav .nav-cta{ display:inline-flex; } 
+    }
+    @media (max-width: 860px){
+      .site-nav .links{ display:none; }
+      .site-nav .hamburger{ display:inline-flex; }
+    }
+
+    /* Make sure sections don't hide behind the fixed header */
+    main{ scroll-padding-top: 76px; }
+    section.step:first-of-type .wrap{ padding-top: 32px; }
+
+    /* ----------------------------------------------------
+       REDUCED MOTION SUPPORT
+    ---------------------------------------------------- */
+    @media (prefers-reduced-motion: reduce) {
+      .bg .gradient, .orbiter { animation: none !important; }
+      .project:hover { transform:none; }
+    }
+      /* --- Flip Card Styles for Projects --- */
+    .flip-card{ perspective:1200px; position:relative; height: 380px; }
+    .flip-inner{ position:absolute; inset:0; transform-style:preserve-3d; transition: transform .8s cubic-bezier(.2,.85,.2,1); border-radius:18px; }
+    .flip-card:hover .flip-inner, .flip-card.flipped .flip-inner{ transform: rotateY(180deg); }
+    .flip-front, .flip-back{ position:absolute; inset:0; backface-visibility:hidden; border-radius:18px; padding:15px; background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.12); display:flex; flex-direction:column; justify-content:center; gap:.6rem; }
+    .flip-front h3{ margin:.2rem 0 .2rem; }
+    .flip-back{ transform: rotateY(180deg); }
+    .btn-row{ display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.4rem; }
+      /* ---- Spacing refinements for Projects section ---- */
+    section#projects .card h2{ margin-bottom:.4rem; }
+    section#projects .card h2 + p{ margin-bottom: .9rem; }
+    section#projects .grid{ gap: 28px; margin-top: 1px; align-items: stretch; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .flip-card{ perspective:1200px; position:relative; height: clamp(300px, 32vw, 360px); }
+    .flip-inner{ position:absolute; inset:0; transform-style:preserve-3d; transition: transform .8s cubic-bezier(.2,.85,.2,1); border-radius:18px; }
+    .flip-front, .flip-back{ position:absolute; inset:0; backface-visibility:hidden; border-radius:18px; padding: clamp(18px, 2.6vw, 8px); background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.12); display:flex; flex-direction:column; justify-content:center; gap:.6rem; }
+    .flip-front h3, .flip-back h3{ margin:.1rem 0 .35rem; line-height:1; }
+    .flip-back{ transform: rotateY(180deg); }
+    .meta{ display:flex; flex-wrap:wrap; gap:.5rem; }
+    .btn-row{ display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.2rem; }
+      /* ---- Chatbot Widget ---- */
+    .bot-toggle{ position:fixed; right:18px; bottom:18px; z-index:20; }
+    .bot-panel{ position:fixed; right:18px; bottom:86px; width:min(420px, 94vw); max-height:70vh; display:none; grid-template-rows:auto 1fr auto; backdrop-filter: var(--blur); background: rgba(7,10,19,.72); border:1px solid rgba(255,255,255,.16); border-radius: 18px; overflow:hidden; z-index:20; box-shadow:0 30px 70px rgba(0,0,0,.55); }
+    .bot-panel.open{ display:grid; }
+    .bot-header{ display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); }
+    .bot-header h3{ margin:0; font-size:1.05rem; white-space:nowrap; }
+    .bot-body{ padding:14px; overflow:auto; display:flex; flex-direction:column; gap:10px; }
+    .msg{ display:flex; gap:10px; align-items:flex-start; }
+    .msg .bubble{ padding:10px 12px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06); max-width:82%; }
+    .msg.user{ justify-content:flex-end; }
+    .msg.user .bubble{ background: rgba(160,132,255,.16); }
+    .bot-input{ display:flex; gap:8px; padding:10px; }
+    .bot-input input{ flex:1; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); color:var(--ink); }
+    .icon-btn{ display:inline-flex; align-items:center; justify-content:center; width:42px; height:42px; border-radius:12px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); cursor:pointer; }
+    .icon-btn.active{ box-shadow: inset 0 0 0 2px var(--accent); }
+      /* ---- Chatbot Live Indicator ---- */
+    .live{ display:none; align-items:center; gap:8px; }
+    #micViz{ width:120px; height:24px; border-radius:10px; background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); }
+    #micStatus{ font-size:.9rem; color: var(--gold); min-width: 88px; text-align:left; }
+      /* ---- Hero avatar styles ---- */
+    .hero{ position:relative; overflow:hidden; }
+    .hero .avatar{
+      position:absolute; right:clamp(10px,2.8vw,28px); bottom:clamp(10px,2.8vw,28px);
+      width: clamp(120px, 22vw, 240px); aspect-ratio:1/1; object-fit:cover;
+      border-radius: 22px; /* subtle rounded card look */
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 20px 60px rgba(0,0,0,.55), inset 0 0 80px rgba(160,132,255,.16);
+      filter: saturate(105%) contrast(105%);
+      backdrop-filter: blur(2px);
+    }
+    @media (max-width: 720px){
+      .hero .avatar{ position:static; display:block; margin: 12px 0 0 auto; }
+    }
+      /* Hide orbiting circle on top-left */
+    .orbiter{ display:none !important; }
+  
+/* === rich-theme overrides begin === */
+/* =========================
+     ✨ Rich Jewel-Tone Theme
+     (non-destructive overrides)
+     ========================= */
+  :root{
+    --ink:#f5f7ff;
+    --muted:#c3c9e8;
+    --primary:#7afcff;   /* teal-cyan */
+    --accent:#b892ff;    /* amethyst */
+    --gold:#ffd479;      /* warm gold */
+    --bg0:#05060a;
+    --bg1:#0a1021;
+    --bg2:#0e1735;
+    --glass: rgba(255,255,255,.08);
+    --radius: 24px;
+  }
+
+  body{ 
+    color: var(--ink); 
+    background: radial-gradient(1400px 800px at 10% -10%, #0b1330 0%, rgba(5,6,10,0) 55%),
+                radial-gradient(1200px 900px at 110% 10%, #09253a 0%, rgba(5,6,10,0) 50%),
+                radial-gradient(1200px 900px at 50% 120%, #1b0d3a 0%, rgba(5,6,10,0) 52%),
+                #060812;
+    background-attachment: fixed;
+  }
+
+  /* Links pop a bit more */
+  a{ color:#bfe9ff; text-decoration: none; }
+  a:hover{ color:#e5d7ff; text-decoration: underline; }
+
+  /* Cards: glass + subtle neon border */
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.035));
+    border: 1px solid rgba(191,233,255,.18);
+    box-shadow:
+      0 30px 80px rgba(0,0,0,.55),
+      inset 0 0 0 1px rgba(255,255,255,.03);
+  }
+  .card::after{
+    background: linear-gradient(120deg,
+       rgba(122,252,255,.20),
+       rgba(184,146,255,.22),
+       rgba(255,212,121,.18));
+    filter: blur(22px) opacity(.7);
+  }
+
+  /* Buttons: satin gradient + glow on hover */
+  .btn{
+    border: 1px solid rgba(214,231,255,.22);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04)) padding-box,
+      radial-gradient(120% 140% at 0% 0%, rgba(122,252,255,.35), transparent 60%) border-box,
+      radial-gradient(120% 140% at 100% 0%, rgba(184,146,255,.35), transparent 60%) border-box;
+    box-shadow: 0 6px 18px rgba(0,0,0,.35);
+  }
+  .btn:hover{
+    transform: translateY(-3px);
+    box-shadow:
+      0 14px 36px rgba(0,0,0,.5),
+      0 0 40px rgba(122,252,255,.18),
+      0 0 52px rgba(184,146,255,.14);
+  }
+
+  /* Chips: soft capsule with inner highlight */
+  .chip{
+    background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+    border: 1px solid rgba(210,210,255,.18);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+  }
+
+  /* Hero gradient text: richer blend */
+  .hero h1 span{
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 48%, var(--gold) 100%);
+    -webkit-background-clip: text; background-clip:text; color:transparent;
+  }
+
+  /* Background gradients retuned to jewel tones */
+  .bg .gradient{
+    background:
+      radial-gradient(55% 60% at 20% 20%, #263066 0%, rgba(10,16,36,0) 65%),
+      radial-gradient(65% 75% at 90% 10%, #0f3d50 0%, rgba(10,16,36,0) 70%),
+      radial-gradient(80% 80% at 50% 90%, #391a6b 0%, rgba(10,16,36,0) 68%);
+    opacity:.72;
+    filter: blur(70px) saturate(140%);
+  }
+  .bg .neural-wave{
+    opacity:.42;
+    filter: blur(26px) saturate(160%);
+    background: conic-gradient(from 0deg at 50% 50%, #00c6a7, #6f6cff, #ff80df, #00c6a7);
+  }
+
+  /* Project flip cards: elevate on hover */
+  .flip-front, .flip-back{
+    background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.045));
+    border: 1px solid rgba(191,233,255,.18);
+  }
+  .project:hover{ box-shadow: 0 38px 64px rgba(0,0,0,.55); }
+
+  /* Timeline accent */
+  .timeline::before{
+    background: linear-gradient(180deg, var(--accent), transparent);
+    opacity:.8;
+  }
+  .event::before{
+    background: linear-gradient(180deg, var(--primary), var(--accent));
+    box-shadow: 0 0 0 5px rgba(184,146,255,.20);
+  }
+
+  /* Footer contrast */
+  footer{ color:#c8d3f6; }
+
+  /* Optional subtle noise for depth */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:-4;
+    background-image: url("data:image/svg+xml;utf8,       <svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'>        <filter id='n'>          <feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/>          <feColorMatrix type='saturate' values='0'/>          <feComponentTransfer><feFuncA type='table' tableValues='0 0 0 0 0 0.015 0.03 0.06 0.08 0.10'/></feComponentTransfer>        </filter>        <rect width='100%%' height='100%%' filter='url(#n)'/>      </svg>");
+    mix-blend-mode: soft-light;
+    opacity:.45;
+  }
+/* === rich-theme overrides end === */
+
+
+</style>
+</head>
+<body>
+
+  <header class="site-nav" role="navigation" aria-label="Primary">
+    <div class="wrap nav-inner">
+      <a href="https://sreejaakuthota.github.io/Portfolio/" class="brand">Sreeja<span>·Akuthota</span></a>
+      <nav class="links">
+        <a href="#publications">Publications</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <a class="btn nav-cta" href="Sreeja Akuthota_AI Eng.pdf" download rel="noopener">Resume</a>
+      <button class="hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="navMenu">☰</button>
+    </div>
+    <div id="navMenu" class="menu-sheet" hidden hidden>
+      <a href="#publications">Publications</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#experience">Experience</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </header>
+
+
+  <!-- Animated background layers -->
+  <div class="bg" aria-hidden="true">
+    <div class="gradient"></div>
+    <div class="neural-wave"></div>
+    <canvas id="constellation"></canvas>
+    <canvas id="robots"></canvas>
+    <div class="orbiter"></div>
+    <div class="orbiter"></div>
+  </div>
+
+  <main id="app">
+
+    <!-- STEP 1: HERO / INTRO -->
+    <section class="step" data-roll>
+      <div class="wrap">
+        <div class="card hero">
+          
+          <h1 class="glow">Sreeja Akuthota <span>AI Engineer — NLP · RAG · Analytics</span></h1>
+          <p>AI Engineer with 5+ years building and deploying ML/NLP solutions across healthcare, insurance, and enterprise. Hands-on with Python, SQL, PyTorch, TensorFlow, and Hugging Face; production on AWS SageMaker, Azure ML, and GCP Vertex AI. Skilled in ETL, RAG, dashboards (Tableau/Power BI), and MLOps (MLflow, Docker, FastAPI) to deliver measurable impact.</p>
+          <div class="meta">
+            <span class="chip">📍 TX, USA</span>
+            <span class="chip">🎓 MS – Business Analytics (Clark University)</span>
+            <span class="chip">🧠 NLP · Transformers · RAG</span>
+            <span class="chip">☁️ SageMaker · Azure ML · Vertex AI</span>
+            <span class="chip">🧰 Python · SQL · PyTorch · TensorFlow</span>
+            <span class="chip">📊 Tableau · Power BI</span>
+            <span class="chip">🚀 MLflow · Docker · FastAPI</span>
+          </div>
+          <div class="cta">
+            <a class="btn" href="#publications">View Publications</a>
+            <a class="btn" href="#projects">Featured Projects</a>
+            <a class="btn" href="#skills">Skills</a>
+            <a class="btn" href="Sreeja Akuthota_AI Eng.pdf" download rel="noopener">⬇️ Download Resume (PDF)</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: PUBLICATIONS -->
+    <section class="step" id="publications" data-roll>
+      <div class="wrap">
+        <div class="card">
+          <h2>Publications</h2>
+          <p>You can find my publications here.</p>
+          <div class="pub-list" id="pubList">
+            <!-- Items will hydrate via JS; fallback static entries below -->
+          </div>
+          <noscript>
+            <div class="pub"><a href="https://doi.org/10.1109/RMKMATE64874.2025.11042677" target="_blank" rel="noopener">DOI: 10.1109/RMKMATE64874.2025.11042677</a><small>Open with JavaScript disabled.</small></div>
+            <div class="pub"><a href="https://doi.org/10.1109/ICCTDC64446.2025.11159006" target="_blank" rel="noopener">DOI: 10.1109/ICCTDC64446.2025.11159006</a><small>Open with JavaScript disabled.</small></div>
+          </noscript>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: PROJECTS -->
+    <section class="step" id="projects" data-roll>
+      <div class="wrap">
+        <div class="card">
+          <h2>Featured Projects</h2>
+          <p>High‑impact work across healthcare analytics, RAG, and MLOps.</p>
+          <div class="grid">
+            <!-- Project 1 -->
+            <article class="flip-card" aria-label="AI Resume & Cover Letter Generator">
+              <div class="flip-inner">
+                <div class="flip-front">
+                  <h3>AI Resume & Cover Letter Generator</h3>
+                  <p><strong>Category:</strong> NLP · <strong>Skills:</strong> Prompt engineering, LLM text generation · <strong>Deploy:</strong> Streamlit Cloud</p>
+                  <div class="meta"><span class="chip">Hugging Face</span><span class="chip">OpenAI API</span><span class="chip">Streamlit</span></div>
+                  <small>Hover or tap to flip →</small>
+                </div>
+                <div class="flip-back">
+                  <h3>What it does</h3>
+                  <p>Generates tailored resumes/cover letters from a job URL or JD text. Uses role‑aware prompts, few‑shot examples, and constraint checks to keep tone concise and ATS‑friendly. Exports PDF/DOCX.</p>
+                  <div class="btn-row">
+                    <a class="btn" href="https://ai-resume-coverletter-generator.streamlit.app/" target= "_blank" >Live Demo</a>
+                    <a class="btn" href="https://github.com/SreejaAkuthota/ai-resume-coverletter-generator" target= "_blank" >GitHub</a>
+                    <!--<a class="btn" href="https://github.com/yourname/ai-resume-cover-generator" target="_blank" rel="noopener">GitHub</a> -->
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Project 2 -->
+            <article class="flip-card" aria-label="Gen AI PDF Q&A Chatbot">
+              <div class="flip-inner">
+                <div class="flip-front">
+                  <h3>Gen AI PDF Q&A Chatbot</h3>
+                  <p><strong>Category:</strong> RAG/LangChain · <strong>Skills:</strong> Embeddings, vector DB, retrieval · <strong>Deploy:</strong> Hugging Face Spaces</p>
+                  <div class="meta"><span class="chip">LangChain</span><span class="chip">FAISS/Chroma</span><span class="chip">Hugging Face</span></div>
+                  <small>Hover or tap to flip →</small>
+                </div>
+                <div class="flip-back">
+                  <h3>How it works</h3>
+                  <p>Chunks PDFs with adaptive windowing, builds embeddings, and answers grounded questions with citation highlights. Includes source attributions and similarity thresholding to reduce hallucinations.</p>
+                  <div class="btn-row">
+                     <a class="btn" href="https://huggingface.co/spaces/Sreeja007/genai-pdf-qa-chatbot-groq" target="_blank">Live Demo</a> 
+                    <a class="btn" href="https://github.com/SreejaAkuthota/genai-pdf-qa-chatbot-groq" target="_blank" rel="noopener">GitHub</a>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Project 3 -->
+            <article class="flip-card" aria-label="AI Review Sentiment Dashboard">
+              <div class="flip-inner">
+                <div class="flip-front">
+                  <h3>AI Review Sentiment Dashboard</h3>
+                  <p><strong>Category:</strong> Data + AI · <strong>Skills:</strong> NLP analysis, data visualization · <strong>Deploy:</strong> Streamlit Cloud</p>
+                  <div class="meta"><span class="chip">Python</span><span class="chip">Pandas</span><span class="chip">Plotly</span></div>
+                  <small>Hover or tap to flip →</small>
+                </div>
+                <div class="flip-back">
+                  <h3>Inside the build</h3>
+                  <p>Ingests product/app reviews, cleans text, applies sentiment + keyword/co‑occurrence analysis and ships interactive trends by category, geography, and release. CSV/Parquet export.</p>
+                  <div class="btn-row">
+                    <a class="btn" href="https://ai-review-sentiment-dashboard.streamlit.app/" target="_blank">Live Demo</a>
+                    <a class="btn" href="https://github.com/SreejaAkuthota/ai-review-sentiment-dashboard" target="_blank" rel="noopener">GitHub</a>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3.5: SKILLS -->
+    <section class="step" id="skills" data-roll>
+      <div class="wrap">
+        <div class="card">
+          <h2>Skills</h2>
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+            <article class="project"><h3>Programming</h3><p>Python, SQL, Java</p></article>
+            <article class="project"><h3>Machine Learning</h3><p>Regression, Classification, Clustering, Model Evaluation, Feature Engineering</p></article>
+            <article class="project"><h3>Deep Learning</h3><p>PyTorch, TensorFlow, CNN, RNN, Transformers</p></article>
+            <article class="project"><h3>NLP</h3><p>Text Preprocessing, Sentiment Analysis, Hugging Face (LLM basics)</p></article>
+            <article class="project"><h3>Generative AI</h3><p>Prompt Engineering, Fine‑Tuning (entry‑level), RAG (exposure)</p></article>
+            <article class="project"><h3>MLOps</h3><p>MLflow, Docker, FastAPI, REST APIs</p></article>
+            <article class="project"><h3>Cloud</h3><p>AWS SageMaker, Azure ML, GCP Vertex AI</p></article>
+            <article class="project"><h3>Data Engineering</h3><p>ETL Basics, Data Preprocessing, Apache Airflow (exposure)</p></article>
+            <article class="project"><h3>Visualization</h3><p>Tableau, Power BI, Plotly/Matplotlib</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3.6: EDUCATION & CERTIFICATION -->
+    <section class="step" id="education" data-roll>
+      <div class="wrap">
+        <div class="card">
+          <h2>Education & Certification</h2>
+          <div class="timeline">
+            <div class="event">
+              <h3>Master of Science in Business Analytics</h3>
+              <small>Aug 2022 – May 2024 · Clark University, MA, USA</small>
+            </div>
+            <div class="event">
+              <h3>Epic COG170 – Cogito Fundamentals</h3>
+              <small>Completed May 2025</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: EXPERIENCE TIMELINE (animated steps) -->
+    <section class="step" id="experience" data-roll>
+      <div class="wrap">
+        <div class="card">
+          <h2>Experience</h2>
+          <div class="timeline" id="timeline">
+            <div class="event">
+              <h3>Business Intelligence Developer / Database Reporting Analyst · VCU Health Systems</h3>
+              <small>Mar 2025 – Current · Healthcare BI, ML validation, KPI frameworks</small>
+              <ul>
+                <li>Automated Tableau + Excel VBA with anomaly detection (−35% manual effort).</li>
+                <li>Improved Epic Slicer Dicer SQL with ML validation (+40% dataset accuracy).</li>
+                <li>Predictive KPI frameworks cut reporting errors by 25%; boosted adoption 30%.</li>
+              </ul>
+            </div>
+            <div class="event">
+              <h3>AI Engineer · Liberty Mutual Insurance</h3>
+              <small>Jul 2024 – Apr 2025 · Transformers on SageMaker, RAG, MLOps</small>
+              <ul>
+                <li>Deployed HF Transformers on SageMaker (+22% NLP accuracy).</li>
+                <li>Docker + FastAPI serving (−20% inference latency); MLflow drift monitoring (−40% rollbacks).</li>
+                <li>RAG with SQL vector search (+25% retrieval accuracy); exec dashboards for sentiment.</li>
+              </ul>
+            </div>
+            <div class="event">
+              <h3>AI Engineer · Mphasis</h3>
+              <small>Apr 2020 – Aug 2022 · ETL automation, Azure ML</small>
+              <ul>
+                <li>Automated ETL (−40% manual preprocessing); optimized regression (+18% forecast accuracy).</li>
+                <li>Hugging Face pipelines (+27% text‑classification precision); Azure ML pipelines (−30% deploy failures).</li>
+              </ul>
+            </div>
+            <div class="event">
+              <h3>ML Engineer · CitiusTech</h3>
+              <small>Aug 2018 – Mar 2020 · Healthcare analytics, SQL tuning</small>
+              <ul>
+                <li>Churn prediction (+15% accuracy); SQL ETL runtime (−25%); DB indexing (+20% query speed).</li>
+                <li>Dashboards for forecasts; standardized DL scripts (−22% prototyping time).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 5: CONTACT -->
+    <section class="step" id="contact" data-roll>
+      <div class="wrap">
+        <div class="card">
+          <h2>Contact</h2>
+          <p>Open for full time roles in GEN‑AI, Data, and Analytics. Reach out below.</p>
+          <p>
+            <a class="btn" href="mailto:sreejaakuthota07@gmail.com">Email Me</a>
+            <a class="btn" href="https://www.linkedin.com/in/sreeja-akuthota/" target="_blank" rel="noopener">LinkedIn</a>
+            <a class="btn" href="#" onclick="alert('Add your GitHub URL'); return false;">GitHub</a>
+            <a class="btn" href="Sreeja Akuthota_AI Eng.pdf" download rel="noopener">Download Resume (PDF)</a>
+            <a class="btn" href="tel:+17745598219">+1(774) 559-8219</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer>© <span id="y"></span> Sreeja Akuthota.</footer>
+    </main>
+
+  <!-- Chatbot (moved OUTSIDE scroll container to prevent snap-to-last-page) -->
+  <button class="btn bot-toggle" id="botToggle" title="Open profile assistant">🤖 Chat / 🎙️ Voice</button>
+  <div class="bot-panel" id="botPanel" role="dialog" aria-label="Profile assistant chat">
+    <div class="bot-header">
+      <h3>Profile Assistant — Sreeja</h3>
+      <div class="live" id="micRow">
+        <canvas id="micViz" width="120" height="24" aria-hidden="true"></canvas>
+        <span id="micStatus"></span>
+      </div>
+      <div>
+        <button class="icon-btn" id="voiceToggle" title="Toggle voice output">🔊</button>
+        <button class="icon-btn" id="closeBot" title="Close">✖</button>
+      </div>
+    </div>
+    <div class="bot-body" id="botBody" aria-live="polite"></div>
+    <form class="bot-input" id="botForm">
+      <input id="botText" type="text" placeholder="Ask about Sreeja's skills, projects, experience…" autocomplete="off" />
+      <button class="icon-btn" id="micBtn" type="button" title="Hold to speak">🎤</button>
+      <button class="btn" type="submit">Send</button>
+    </form>
+  </div>
+
+
+  <script>
+    // ----------------------------------------------------
+    // UTIL: clamp map value
+    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+    // ----------------------------------------------------
+    // CONSTELLATION CANVAS BACKGROUND
+    (function constellation(){
+      const canvas = document.getElementById('constellation');
+      const ctx = canvas.getContext('2d');
+      let w, h, dpr, points = [];
+      const COUNT = 120;
+
+      function resize(){
+        dpr = Math.min(2, window.devicePixelRatio || 1);
+        w = canvas.width = Math.floor(innerWidth * dpr);
+        h = canvas.height = Math.floor(innerHeight * dpr);
+        canvas.style.width = innerWidth + 'px';
+        canvas.style.height = innerHeight + 'px';
+        points = Array.from({length: COUNT}, () => ({
+          x: Math.random()*w, y: Math.random()*h,
+          vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35
+        }));
+      }
+
+      function step(){
+        ctx.clearRect(0,0,w,h);
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        for(const p of points){
+          p.x += p.vx; p.y += p.vy;
+          if(p.x < 0 || p.x > w) p.vx *= -1;
+          if(p.y < 0 || p.y > h) p.vy *= -1;
+          ctx.beginPath(); ctx.arc(p.x, p.y, 1.2*dpr, 0, Math.PI*2); ctx.fill();
+        }
+        // connect
+        for(let i=0;i<points.length;i++){
+          for(let j=i+1;j<points.length;j++){
+            const p = points[i], q = points[j];
+            const dx = p.x-q.x, dy=p.y-q.y, dist = Math.hypot(dx,dy);
+            if(dist < 120*dpr){
+              const a = 1 - dist/(120*dpr);
+              ctx.strokeStyle = `rgba(160,132,255,${a*.25})`;
+              ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(step);
+      }
+      addEventListener('resize', resize, {passive:true});
+      resize(); step();
+    })();
+
+    // ----------------------------------------------------
+    // STEP-ROLL: tilt/flip each section on scroll
+    (function stepRoll(){
+      const steps = document.querySelectorAll('section[data-roll] .card');
+      const main = document.querySelector('main');
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e => {
+          const el = e.target;
+          if(e.isIntersecting){
+            el.animate([
+              { transform: 'rotateX(16deg) translateZ(-60px) translateY(40px)', opacity: .0 },
+              { transform: 'rotateX(0deg) translateZ(0) translateY(0px)', opacity: 1 }
+            ], { duration: 900, easing: 'cubic-bezier(.22,.85,.23,.99)', fill: 'forwards' });
+          }
+        });
+      }, { root: main, threshold: .55 });
+      steps.forEach(s => io.observe(s));
+    })();
+
+    // ----------------------------------------------------
+    // 3D PARALLAX ON MOUSE
+    (function parallax(){
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.addEventListener('mousemove', (e)=>{
+          const r = card.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width - .5;
+          const y = (e.clientY - r.top) / r.height - .5;
+          card.style.transform = `rotateY(${clamp(x*6,-8,8)}deg) rotateX(${clamp(-y*6,-8,8)}deg)`;
+        });
+        card.addEventListener('mouseleave', ()=>{
+          card.style.transform = 'rotateY(0deg) rotateX(0deg)';
+        });
+      });
+    })();
+
+    // ----------------------------------------------------
+    // PUBLICATIONS: fetch Crossref metadata if available
+    (async function publications(){
+      const dois = [
+        '10.1109/RMKMATE64874.2025.11042677',
+        '10.1109/ICCTDC64446.2025.11159006'
+      ];
+      const list = document.getElementById('pubList');
+      for(const doi of dois){
+        try{
+          const r = await fetch(`https://api.crossref.org/works/${encodeURIComponent(doi)}`);
+          if(!r.ok) throw new Error('Crossref unavailable');
+          const data = await r.json();
+          const w = data.message;
+          const title = Array.isArray(w.title) ? w.title[0] : (w.title || 'Untitled');
+          const pub = document.createElement('div');
+          pub.className = 'pub';
+          pub.innerHTML = `
+            <a href="https://doi.org/${doi}" target="_blank" rel="noopener" class="glow">${title}</a>
+            <small>${(w['container-title'] && w['container-title'][0]) || ''} · ${(w.published && (w.published['date-parts']||[["----"]])[0][0]) || ''} · DOI: ${doi}</small>
+          `;
+          list.appendChild(pub);
+        } catch(err){
+          const pub = document.createElement('div');
+          pub.className = 'pub';
+          pub.innerHTML = `<a href="https://doi.org/${doi}" target="_blank" rel="noopener">DOI: ${doi}</a><small>Metadata fetch failed; direct DOI link provided.</small>`;
+          list.appendChild(pub);
+        }
+      }
+    })();
+
+    // ----------------------------------------------------
+    // YEAR
+    document.getElementById('y').textContent = new Date().getFullYear();
+    // Flip on click for touch devices
+  (function enableFlip(){
+    document.addEventListener('click', (e)=>{
+      const card = e.target.closest('.flip-card');
+      if(card){ card.classList.toggle('flipped'); }
+    });
+  })();
+  // ----------------------------------------------------
+  // GEN‑AI ROBOT SPRITES (Canvas) — moving assistants with subtle motions
+  (function robots(){
+    const canvas = document.getElementById('robots');
+    const ctx = canvas.getContext('2d');
+    let w, h, dpr, bots=[]; const COUNT = 8;
+    function resize(){
+      dpr = Math.min(2, window.devicePixelRatio||1);
+      w = canvas.width = Math.floor(innerWidth*dpr);
+      h = canvas.height = Math.floor(innerHeight*dpr);
+      canvas.style.width = innerWidth+'px'; canvas.style.height = innerHeight+'px';
+      if(bots.length===0){
+        for(let i=0;i<COUNT;i++) bots.push(makeBot());
+      }
+    }
+    function makeBot(){
+      return {
+        x: Math.random()*w, y: Math.random()*h, s: (Math.random()*0.6+0.5)*dpr,
+        vx: (Math.random()*0.6+0.2)*dpr * (Math.random()<.5?1:-1),
+        vy: (Math.random()*0.2-0.1)*dpr,
+        t: Math.random()*Math.PI*2,
+        hue: 180 + Math.random()*120
+      };
+    }
+    function drawBot(b){
+      const s=b.s; ctx.save(); ctx.translate(b.x,b.y);
+      // float
+      const bob = Math.sin(b.t)*2*s;
+      ctx.translate(0,bob);
+      // glow
+      ctx.shadowColor = `hsla(${b.hue}, 80%, 70%, .55)`; ctx.shadowBlur = 18*s;
+      // body
+      ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.strokeStyle = `hsla(${b.hue}, 90%, 70%, .9)`; ctx.lineWidth = 2*s;
+      roundRect(ctx,-12*s,-10*s,24*s,20*s,6*s,true,true);
+      // head
+      roundRect(ctx,-10*s,-22*s,20*s,12*s,4*s,true,true);
+      // antenna
+      ctx.beginPath(); ctx.moveTo(0,-22*s); ctx.lineTo(0,-28*s); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0,-30*s,2.6*s,0,Math.PI*2); ctx.fillStyle=`hsla(${b.hue}, 95%, 75%, .95)`; ctx.fill();
+      // eyes (blink)
+      const blink = Math.abs(Math.sin(b.t*2))>.2?3*s:0.6*s;
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-4*s,-16*s,blink,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc( 4*s,-16*s,blink,0,Math.PI*2); ctx.fill();
+      // arms
+      ctx.strokeStyle = `hsla(${b.hue}, 90%, 70%, .8)`; ctx.lineWidth = 1.6*s;
+      const arm = Math.sin(b.t*3)*3*s;
+      ctx.beginPath(); ctx.moveTo(-12*s,-6*s); ctx.quadraticCurveTo(-18*s,arm, -22*s, 4*s); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo( 12*s,-6*s); ctx.quadraticCurveTo( 18*s,-arm, 22*s, 4*s); ctx.stroke();
+      // book/tablet symbol
+      ctx.fillStyle = 'rgba(255,255,255,.12)'; roundRect(ctx,-7*s,2*s,14*s,8*s,2*s,true,true);
+      // tiny code brackets floating
+      ctx.globalAlpha=.85; ctx.font = `${8*s}px ui-monospace, SFMono-Regular, Menlo, monospace`;
+      ctx.fillStyle = `hsla(${b.hue}, 90%, 80%, .9)`; ctx.fillText('<AI>',-12*s,-26*s);
+      ctx.restore();
+    }
+    function roundRect(ctx,x,y,w,h,r,fill,stroke){
+      if (w<2*r) r=w/2; if (h<2*r) r=h/2; ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); if(fill) ctx.fill(); if(stroke) ctx.stroke();
+    }
+    function step(){
+      ctx.clearRect(0,0,w,h);
+      for(const b of bots){
+        b.t += 0.02; b.x += b.vx; b.y += b.vy + Math.sin(b.t)*0.2;
+        if(b.x < -40*dpr) b.x = w+40*dpr; if(b.x > w+40*dpr) b.x = -40*dpr;
+        if(b.y < 20*dpr) b.vy *= -1; if(b.y > h-20*dpr) b.vy *= -1;
+        drawBot(b);
+      }
+      requestAnimationFrame(step);
+    }
+    addEventListener('resize', resize, {passive:true});
+    resize(); step();
+  })();
+</script>
+  <script>
+  // ----------------------------------------------------
+  // PROFILE CHATBOT (text + voice using Web Speech API)
+  (function profileBot(){
+    const toggle = document.getElementById('botToggle');
+    const panel = document.getElementById('botPanel');
+    const closeBtn = document.getElementById('closeBot');
+    const form = document.getElementById('botForm');
+    const input = document.getElementById('botText');
+    const body = document.getElementById('botBody');
+    const micBtn = document.getElementById('micBtn');
+    const voiceToggle = document.getElementById('voiceToggle');
+
+    let voiceEnabled = false; // user-controlled
+
+    // Simple knowledge base extracted from the page
+    const KB = [
+      {q:['tell me about yourself','about yourself','introduce yourself','about sreeja','tell me about sreeja','who is sreeja','profile summary','tell me about you'], a:"I'm Sreeja Akuthota, an AI Engineer with 5+ years building NLP/RAG and analytics solutions end‑to‑end. I ship production systems on AWS/Azure/GCP with Python, PyTorch/TensorFlow, LangChain/HF, and MLOps tooling (MLflow, Docker, FastAPI). I hold an MS in Business Analytics (Clark University) and have delivered impact across healthcare and insurance."},
+      {q:['name','who are you','your name'], a:'I am Sreeja Akuthota, an AI Engineer focused on NLP, RAG, and analytics.'},
+      {q:['email','contact','reach you'], a:'You can reach me at sreejaakuthota07@gmail.com and via LinkedIn: /in/sreeja-akuthota/'},
+      //{q:['phone','number','contact number', 'what is your contact number', 'how to call you', 'how to contact you'], a:'My phone number is +1 774-559-8219.'},
+      //{q:['phone','number','contact number', 'what is your contact number', 'how to call you', 'how to contact you'], a:Contact},
+      {q:['location','where are you based','where do you live'], a:'I am currently based in the United States (TX).'},   
+      {q:['hobbies','interests','what do you do in your free time'], a:'In my free time, I enjoy reading about AI advancements, working on personal projects, and exploring the outdoors.'},
+      {q:['education','degree','masters','study'], a:'I hold an MS in Business Analytics from Clark University (2022–2024) and completed Epic COG170 (2025).'},
+      {q:['skills','stack','tech','tools'], a:'Core stack: Python, SQL, PyTorch, TensorFlow, Hugging Face, LangChain, MLflow, Docker, FastAPI; Cloud: AWS SageMaker, Azure ML, GCP Vertex; Viz: Tableau, Power BI, Plotly.'},
+      {q:['experience','work','jobs','roles'], a:'Recent roles: BI Developer at VCU Health (2025–), AI Engineer at Liberty Mutual (2024–2025), AI Engineer at Mphasis (2020–2022), and ML Engineer at CitiusTech (2018–2020).'},
+      {q:['projects','portfolio'], a:'Projects include: AI Resume & Cover Letter Generator (NLP, Streamlit), Gen AI PDF Q&A Chatbot (RAG/LangChain on HF Spaces), and AI Review Sentiment Dashboard (NLP + viz in Streamlit).'},
+      {q:['publications','papers','doi'], a:'I have publications under IEEE with DOIs 10.1109/RMKMATE64874.2025.11042677 and 10.1109/ICCTDC64446.2025.11159006.'},
+      {q:['strength','what are you good at'], a:'Designing practical ML systems end‑to‑end: data pipelines, modeling, evaluation, and shipping to cloud with observability.'},
+      {q:['resume','cv','download'], a:'You can download my resume using the button in the hero section (top of the page).'},
+    ];
+
+    function answer(text){
+      const t = text.toLowerCase();
+      // try KB first
+      for(const item of KB){ if(item.q.some(k=>t.includes(k))) return item.a; }
+      // lightweight route: section-based fallback
+      if(/(rag|langchain|pdf|chatbot)/.test(t)) return 'The Gen AI PDF Q&A Chatbot uses LangChain with FAISS/Chroma for embeddings-based retrieval, chunks PDFs, and answers with citations. Deployed on Hugging Face Spaces.';
+      if(/(resume|cover letter|generator)/.test(t)) return 'The AI Resume & Cover Letter Generator ingests a JD or URL, applies role-aware prompts and few-shot templates to produce ATS-friendly output, with export to PDF/DOCX on Streamlit.';
+      if(/(sentiment|dashboard|reviews)/.test(t)) return 'The AI Review Sentiment Dashboard cleans reviews, applies sentiment + topic keywords and visualizes trends in Streamlit using Plotly with CSV/Parquet export.';
+      if(/(where|location)/.test(t)) return 'I am currently based in the United States (TX).';
+      return "I can share details about my skills, projects, experience, education, and publications. Try: ‘What are your NLP skills?’ or ‘Tell me about your RAG chatbot.’";
+    }
+
+    function push(role, text){
+      const div = document.createElement('div');
+      div.className = 'msg ' + (role==='user'?'user':'bot');
+      div.innerHTML = `<div class=\"bubble\">${text}</div>`;
+      body.appendChild(div); body.scrollTop = body.scrollHeight;
+      if(role==='bot' && voiceEnabled){ speak(text); }
+    }
+
+    function speak(text){
+      if(!('speechSynthesis' in window)) return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 1.0; u.pitch = 1.02; u.volume = 1.0;
+      // Try to pick a natural voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const pref = voices.find(v=>/en-US/i.test(v.lang) && /(female|samantha|google us english)/i.test(v.name)) || voices.find(v=>/en/i.test(v.lang));
+      if(pref) u.voice = pref;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    }
+
+    // STT via Web Speech (Chrome)
+    let rec = null, listening = false;
+    function initRec(){
+      const WSR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!WSR) return null;
+      const r = new WSR();
+      r.lang = 'en-US';
+      r.interimResults = false;
+      r.maxAlternatives = 1;
+      r.continuous = false; // short utterances for reliability
+      r.onresult = (e)=>{
+        const text = e.results[0][0].transcript;
+        input.value = text; handleSubmit(text);
+      };
+      r.onerror = (e)=>{
+        listening = false; micBtn.classList.remove('active');
+        if(e.error === 'not-allowed') push('bot', 'Mic permissions are blocked. Click the padlock in your browser bar and allow the microphone.');
+        else if(e.error !== 'no-speech') push('bot', `Mic error: ${e.error}. Try again.`);
+      };
+      r.onend = ()=>{ listening=false; micBtn.classList.remove('active'); };
+      return r;
+    }
+
+    // Handle text submission
+    function handleSubmit(text){
+      if(!text) return;
+      push('user', text);
+      const out = answer(text);
+      setTimeout(()=> push('bot', out), 120);
+    }
+
+    // Toggle click to start/stop listening (more reliable than press-hold on some browsers)
+    function toggleMic(){
+      if(!rec){ rec = initRec(); }
+      if(!rec){ push('bot', 'Voice input is not supported in this browser. Try Chrome on desktop or Android.'); return; }
+      try{
+        if(!listening){
+          listening = true; micBtn.classList.add('active');
+          // Recreate the recognizer fresh each time to avoid aborted sessions
+          rec.abort && rec.abort();
+          rec = initRec();
+          rec.start();
+        } else {
+          rec.stop(); // onend will clean up state
+        }
+      }catch(err){ listening=false; micBtn.classList.remove('active'); push('bot', 'Could not start mic. If you just denied access, allow it in the browser permissions and try again.'); }
+    }
+
+    micBtn.addEventListener('click', toggleMic);
+
+    toggle.addEventListener('click', ()=>{ panel.classList.toggle('open'); input.focus(); });
+    closeBtn.addEventListener('click', ()=> panel.classList.remove('open'));
+    form.addEventListener('submit', (e)=>{ e.preventDefault(); const t=input.value.trim(); input.value=''; handleSubmit(t); });
+
+    voiceToggle.addEventListener('click', ()=>{ voiceEnabled=!voiceEnabled; voiceToggle.classList.toggle('active', voiceEnabled); if(voiceEnabled) speak("Voice enabled. Ask me about Sreeja's profile."); else window.speechSynthesis.cancel(); });
+
+    rec = initRec();
+    if(rec){
+      micBtn.addEventListener('mousedown', ()=>{ if(listening) return; listening=true; if(window.__startListenUI) window.__startListenUI(); try{ rec.start(); }catch{} });
+      micBtn.addEventListener('mouseup', ()=>{ try{ rec.stop(); }catch{}; if(window.__stopListenUI) window.__stopListenUI(); listening=false; });
+      micBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); if(listening) return; listening=true; if(window.__startListenUI) window.__startListenUI(); try{ rec.start(); }catch{} }, {passive:false});
+      micBtn.addEventListener('touchend', ()=>{ try{ rec.stop(); }catch{}; if(window.__stopListenUI) window.__stopListenUI(); listening=false; }, {passive:true});
+    } else {
+      micBtn.title = 'Speech-to-text not supported in this browser';
+      micBtn.style.opacity = .6;
+    }
+
+    push('bot', 'Hi! I\'m your profile assistant. Ask me about skills, projects, experience, education, or publications. Toggle 🔊 for a narrated voice answer.');
+  })();
+  </script>
+  <script>
+    // --- Hotfix: remove any stray CSS text that may have leaked into the body ---
+    (function cleanStrayCss(){
+      const suspicious = [/Chatbot Widget/gi, /\.bot-toggle\s*\{/gi, /\.bot-panel\s*\{/gi];
+      function walk(node){
+        if(node.nodeType === 3){ // text node
+          const txt = node.nodeValue;
+          if(suspicious.some(r=>r.test(txt))){
+            const p = node.parentNode; p.removeChild(node);
+          }
+        } else if(node.nodeType === 1){
+          for(const child of Array.from(node.childNodes)) walk(child);
+        }
+      }
+      walk(document.body);
+    })();
+  </script>
+  <script>
+  // ---- Waveform + Permission Warmup + Fallback ----
+  (function micUX(){
+    const micBtn = document.getElementById('micBtn');
+    const micViz = document.getElementById('micViz');
+    const micRow = document.getElementById('micRow');
+    const micStatus = document.getElementById('micStatus');
+    const botBody = document.getElementById('botBody');
+    const botToggle = document.getElementById('botToggle');
+
+    let audioCtx, analyser, src, raf, stream;
+
+    function draw(){
+      if(!analyser) return; const ctx = micViz.getContext('2d');
+      const W = micViz.width, H = micViz.height; const arr = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteTimeDomainData(arr); ctx.clearRect(0,0,W,H);
+      ctx.beginPath(); for(let x=0;x<W;x++){ const idx = Math.floor(x/ W * arr.length); const v = arr[idx]/128.0; const y = v * H/2; x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);} ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=2; ctx.stroke();
+      raf = requestAnimationFrame(draw);
+    }
+    function startWave(){
+      if(raf) cancelAnimationFrame(raf);
+      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ return; }
+      navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{
+        stream = s; audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser(); analyser.fftSize = 512;
+        src = audioCtx.createMediaStreamSource(stream); src.connect(analyser); draw();
+      }).catch(err=>{
+        // fallback: show guidance and stop asking
+        addBotNote('Mic permission denied. I\'ll stay in text chat. To enable voice: open site over HTTPS or localhost, then allow the microphone.');
+        stopWave();
+      });
+    }
+    function stopWave(){
+      if(raf) cancelAnimationFrame(raf); raf=null; if(analyser){ try{ analyser.disconnect(); }catch{} }
+      if(src){ try{ src.disconnect(); }catch{} } analyser=null; src=null;
+      if(stream){ try{ stream.getTracks().forEach(t=>t.stop()); }catch{} } stream=null;
+      if(audioCtx){ try{ audioCtx.close(); }catch{} } audioCtx=null;
+      const ctx = micViz.getContext('2d'); ctx.clearRect(0,0,micViz.width,micViz.height);
+    }
+    function addBotNote(text){
+      if(!botBody) return; const div = document.createElement('div');
+      div.className='msg bot'; div.innerHTML = `<div class="bubble">${text}</div>`; botBody.appendChild(div); botBody.scrollTop = botBody.scrollHeight;
+    }
+
+    // Show warning if not secure origin (causes repeated prompts)
+    if(location.protocol !== 'https:' && location.hostname !== 'localhost'){
+      addBotNote('Tip: For stable mic permissions, open this page via HTTPS or localhost. Some browsers will re-prompt on file:// or http://.');
+    }
+
+    // Hook mic button for visual + status (STT handled in main bot script)
+    function startListenUI(){ micStatus.textContent='listening…'; if(micRow) micRow.style.display='flex'; micBtn.classList.add('active'); startWave(); }
+    function stopListenUI(){ micStatus.textContent=''; if(micRow) micRow.style.display='none'; micBtn.classList.remove('active'); stopWave(); }
+
+    // UI hooks are now controlled by profileBot events. Expose start/stop globally.
+    window.__startListenUI = startListenUI;
+    window.__stopListenUI = stopListenUI;
+
+    // (removed warm-up to prevent premature permission prompts)
+  // warm-up removed
+        }
+      });
+    }
+  })();
+  </script>
+<script>
+    // ---- Header scroll state + active link highlighting ----
+    (function headerNav(){
+      const header = document.querySelector('.site-nav');
+      const links = Array.from(document.querySelectorAll('.site-nav .links a'));
+      const sections = Array.from(document.querySelectorAll('section.step[id]'));
+      const byId = Object.fromEntries(sections.map(s=>[s.id, s]));
+      
+      // Observer to track which section is centered in viewport of <main>
+      const main = document.querySelector('main');
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            const id = e.target.id;
+            links.forEach(a=>a.classList.toggle('active', a.getAttribute('href')==='#'+id));
+          }
+        });
+      }, {root: main, threshold: 0.6});
+      sections.forEach(s=>io.observe(s));
+
+      function onScroll(){
+        header.classList.toggle('scrolled', window.scrollY > 8);
+      }
+      addEventListener('scroll', onScroll, {passive:true});
+      onScroll();
+
+      // Smooth scroll (native behavior with CSS could suffice, but ensure in older browsers)
+      links.forEach(a=>a.addEventListener('click', (e)=>{
+        const id = a.getAttribute('href').slice(1);
+        const el = byId[id]; if(!el) return;
+        e.preventDefault();
+        el.scrollIntoView({behavior:'smooth', block:'start'});
+      }));
+
+      // Mobile menu toggle
+      const btn = document.querySelector('.site-nav .hamburger');
+      const sheet = document.getElementById('navMenu');
+      if(btn && sheet){
+        btn.addEventListener('click', ()=>{
+          const open = sheet.hasAttribute('hidden') ? false : true;
+          if(open){ sheet.setAttribute('hidden',''); btn.setAttribute('aria-expanded','false'); }
+          else { sheet.removeAttribute('hidden'); btn.setAttribute('aria-expanded','true'); }
+        });
+        sheet.addEventListener('click', (e)=>{
+          if(e.target.tagName === 'A'){ sheet.setAttribute('hidden',''); btn.setAttribute('aria-expanded','false'); }
+        });
+        // Close on ESC
+        addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ sheet.setAttribute('hidden',''); btn.setAttribute('aria-expanded','false'); } });
+      }
+    })();
+
+</script>
+</body>
+</html>

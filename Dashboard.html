@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Career Canvas</title>
+
+<!-- Tailwind Play CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+
+<!-- Lottie -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" defer></script>
+
+<!-- Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+  :root{
+    --indigo:#6366f1; --indigo-600:#4f46e5; --emerald:#10b981;
+  }
+  .animated-bg{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(79,70,229,.25), transparent 60%),
+      radial-gradient(1000px 600px at -10% 20%, rgba(16,185,129,.18), transparent 60%),
+      linear-gradient(120deg, #0b1021 0%, #0a0f1d 50%, #08101a 100%);
+    position: fixed; inset: 0; z-index: -1; overflow: hidden;
+  }
+  .blob{ position:absolute; filter:blur(42px); opacity:.35; mix-blend-mode:screen; pointer-events:none; will-change: transform; }
+  .blob--1{ width:520px;height:520px;background:#6366f1;border-radius:42% 58% 63% 37%/41% 46% 54% 59%; top:10%;left:5%;}
+  .blob--2{ width:430px;height:430px;background:#22d3ee;border-radius:60% 40% 30% 70%/60% 30% 70% 40%; bottom:8%;right:10%;}
+  .blob--3{ width:380px;height:380px;background:#10b981;border-radius:55% 45% 50% 50%/50% 65% 35% 50%; top:45%;right:25%;}
+
+  .tilt{ transform-style:preserve-3d; transition:transform .12s linear; will-change: transform; }
+  .tilt:hover{ transform: translateZ(8px) }
+  .shine::after{ content:''; position:absolute; inset:-1px; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.08) 50%,transparent 70%); transform:translateX(-150%); transition:transform .6s ease; pointer-events:none; border-radius:inherit;}
+  .shine:hover::after{ transform:translateX(150%); }
+  .divider{ height:1px; background:linear-gradient(90deg,transparent,rgba(148,163,184,.35),transparent);}
+  .focus-ring:focus{ outline:3px solid rgba(79,70,229,.55); outline-offset: 2px;}
+
+  .chat-fab{ position:fixed; right:1rem; bottom:1rem; z-index:50;}
+  .chat-panel{ position:fixed; right:1rem; bottom:5rem; z-index:50; width:340px; max-width:calc(100vw - 2rem); background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border:1px solid rgba(148,163,184,.25); border-radius:1rem; box-shadow:0 10px 40px rgba(0,0,0,.55);}
+  .no-scrollbar::-webkit-scrollbar{ display:none;}
+  .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none;}
+  .chat-log{ max-height: 48vh; }
+  .carousel-viewport{ overflow: hidden; }
+  .carousel-track{ display:flex; gap:16px; will-change: transform; }
+  .star{ filter: drop-shadow(0 1px 0 rgba(0,0,0,.3)); }
+  .fb-delete { position: absolute; right: 10px; top: 10px; opacity: 0; transition: opacity .2s ease; }
+  .admin-on .fb-deletable:hover .fb-delete { opacity: 1; }
+  .admin-on .fb-delete { opacity: .9; }
+  .admin-tools{ position: fixed; left: 1rem; bottom: 1rem; z-index:50; display:none; }
+  .admin-on .admin-tools{ display:block; }
+  .feedback-scroll { max-height: 28rem; overflow-y: auto; scroll-behavior: smooth; }
+  .modal{ position: fixed; inset: 0; display:none; align-items:center; justify-content:center; z-index:60; }
+  .modal.show{ display:flex; }
+
+  /* Logo micro styles */
+  .logo-wrap{position:fixed;top:16px;left:16px;z-index:9999;display:flex;gap:8px;align-items:center;text-decoration:none}
+  .logo-icon{width:40px;height:40px;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+  .logo-text{line-height:1}
+  .logo-line1{color:#fff;font-weight:600;font-size:14px}
+  .logo-line2{font-weight:700;font-size:14px;background:linear-gradient(90deg,#6366F1,#10B981);-webkit-background-clip:text;color:transparent}
+  .logo-tag{font-size:10px;color:#9ca3af}
+  @media (max-width:640px){.logo-tag{display:none}}
+
+  /* Currency Toggle (simple switch) */
+  .switch {
+    position: relative; width: 54px; height: 28px; display:inline-block;
+  }
+  .switch input { display:none; }
+  .slider {
+    position:absolute; cursor:pointer; inset:0; background:#334155; border-radius:9999px; transition:.25s;
+  }
+  .slider:before {
+    position:absolute; content:""; height:22px; width:22px; left:4px; top:3px; background:white; border-radius:50%; transition:.25s;
+  }
+  input:checked + .slider { background:#10b981; }
+  input:checked + .slider:before { transform: translateX(26px); }
+</style>
+</head>
+<body class="text-slate-100 antialiased bg-slate-950">
+  <div class="animated-bg">
+    <div class="blob blob--1"></div>
+    <div class="blob blob--2"></div>
+    <div class="blob blob--3"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="relative">
+    <div class="max-w-7xl mx-auto px-4 pt-8 pb-16">
+      <h1 class="sr-only">Career Canvas — Build. Showcase. Get Hired.</h1>
+
+      <!-- Logo -->
+      <a href="/" class="logo-wrap" aria-label="Career Canvas home">
+        <svg viewBox="0 0 180 180" class="logo-icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="cc-grad2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#6366F1"/>
+              <stop offset="1" stop-color="#10B981"/>
+            </linearGradient>
+          </defs>
+          <rect x="12" y="12" rx="24" ry="24" width="156" height="156" fill="url(#cc-grad2)" opacity="0.22" stroke="url(#cc-grad2)" stroke-width="6"/>
+          <path d="M144 100c0 30-24 54-54 54s-54-24-54-54 24-54 54-54c14 0 27 6 36 15" stroke="url(#cc-grad2)" stroke-width="14" stroke-linecap="round" fill="none"/>
+          <path d="M112 86l-16 20-10-10" stroke="#10B981" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="logo-text">
+          <div class="logo-line1">Career</div>
+          <div class="logo-line2">Canvas</div>
+          <div class="logo-tag">Build. Showcase. Get Hired.</div>
+        </div>
+      </a>
+
+      <!-- Controls -->
+      <div class="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div class="flex gap-2 flex-wrap">
+          <button data-filter="all" class="filter-btn px-3 py-1.5 rounded-full bg-[color:var(--indigo)] hover:bg-[color:var(--indigo-600)] transition focus-ring text-white">All</button>
+          <button data-filter="portfolio" class="filter-btn px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 transition focus-ring">Portfolios</button>
+          <button data-filter="gitportfolios" class="filter-btn px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 transition focus-ring">Git Portfolios</button>
+          <button data-filter="github" class="filter-btn px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 transition focus-ring">GitHub</button>
+          <button data-filter="streamlit" class="filter-btn px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 transition focus-ring">Live Demos</button>
+          <button data-filter="resume" class="filter-btn px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 transition focus-ring">Resume</button>
+        </div>
+        <div class="sm:ml-auto w-full sm:w-96 relative">
+          <input id="search" placeholder="Search by title, tag, or note…" class="w-full rounded-xl bg-slate-800/80 border border-slate-700 px-4 py-2 pl-10 focus-ring" />
+          <div class="absolute left-3 top-2.5 opacity-70" aria-hidden="true"><i data-lucide="search"></i></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="mt-6 grid grid-cols-2 sm:grid-cols-5 gap-3 max-w-4xl">
+        <div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-center">
+          <div class="text-sm text-slate-400">Portfolios</div>
+          <div id="stat-portfolios" class="text-xl font-semibold">–</div>
+        </div>
+        <div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-center">
+          <div class="text-sm text-slate-400">Git Portfolios</div>
+          <div id="stat-gitportfolios" class="text-xl font-semibold">–</div>
+        </div>
+        <div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-center">
+          <div class="text-sm text-slate-400">GitHub</div>
+          <div id="stat-github" class="text-xl font-semibold">–</div>
+        </div>
+        <div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-center">
+          <div class="text-sm text-slate-400">Live Demos</div>
+          <div id="stat-streamlit" class="text-xl font-semibold">–</div>
+        </div>
+        <div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-center">
+          <div class="text-sm text-slate-400">Resume</div>
+          <div id="stat-resume" class="text-xl font-semibold">–</div>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+  </header>
+
+  <!-- Content Grid -->
+  <main class="relative">
+    <div class="max-w-7xl mx-auto px-4 py-10">
+      <div id="grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+    </div>
+  </main>
+
+  <!-- FEEDBACKS SECTION -->
+  <section class="relative">
+    <div class="divider"></div>
+    <div class="max-w-7xl mx-auto px-4 py-12">
+      <div class="flex items-center gap-3 mb-6">
+        <i data-lucide="quote" class="opacity-80"></i>
+        <h2 class="text-2xl font-semibold">Customer Feedback</h2>
+      </div>
+
+      <!-- Marquee -->
+      <div class="rounded-2xl bg-slate-900/60 border border-slate-800 p-4 mb-6 carousel-viewport">
+        <div id="feedbackTrack" class="carousel-track"></div>
+      </div>
+
+      <!-- Scrollable list -->
+      <div class="rounded-2xl bg-slate-900/60 border border-slate-800">
+        <div class="px-4 py-3 flex items-center justify-between">
+          <div class="text-sm text-slate-300/90">All feedback (scrollable)</div>
+          <div class="text-xs text-emerald-400">Tip: Use mouse wheel / trackpad</div>
+        </div>
+        <div class="feedback-scroll px-4 pb-4">
+          <div id="feedbackGrid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+        </div>
+      </div>
+
+      <!-- Add Feedback -->
+      <div class="mt-10 grid md:grid-cols-2 gap-6 items-start">
+        <div class="rounded-2xl bg-slate-900/60 border border-slate-800 p-5">
+          <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
+            <i data-lucide="message-square-plus"></i> Add Feedback
+          </h3>
+          <form id="feedbackForm" class="space-y-3">
+            <div>
+              <label class="block text-sm mb-1">Client / Company</label>
+              <input id="fbClient" class="w-full rounded-lg bg-slate-900/70 border border-slate-700 px-3 py-2 focus-ring" required />
+            </div>
+            <div>
+              <label class="block text-sm mb-1">Project (optional)</label>
+              <input id="fbProject" class="w-full rounded-lg bg-slate-900/70 border border-slate-700 px-3 py-2 focus-ring" />
+            </div>
+            <div>
+              <label class="block text-sm mb-1">Tags (comma separated, optional)</label>
+              <input id="fbTags" placeholder="UI, Performance" class="w-full rounded-lg bg-slate-900/70 border border-slate-700 px-3 py-2 focus-ring" />
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="flex-1">
+                <label class="block text-sm mb-1">Rating (1–5)</label>
+                <input id="fbRating" type="number" min="1" max="5" value="5" class="w-full rounded-lg bg-slate-900/70 border border-slate-700 px-3 py-2 focus-ring" required />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm mb-1">Feedback</label>
+              <textarea id="fbText" rows="3" class="w-full rounded-lg bg-slate-900/70 border border-slate-700 px-3 py-2 focus-ring" required></textarea>
+            </div>
+            <button class="px-4 py-2 rounded-lg bg-[color:var(--indigo)] hover:bg-[color:var(--indigo-600)] transition focus-ring text-white">Submit</button>
+          </form>
+        </div>
+
+        <!-- Deals & Pricing -->
+        <div class="pricing-card group relative rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900/80 to-slate-800 border border-emerald-500/20 p-6 shadow-2xl overflow-hidden">
+          <h3 class="text-2xl font-bold mb-3 flex items-center gap-2 text-slate-100">
+            <i data-lucide="zap"></i> Deals & Pricing
+          </h3>
+
+          <!-- Currency Toggle -->
+          <div class="mb-4 flex items-center justify-end gap-2">
+            <span class="text-xs text-slate-400">USD</span>
+            <label class="switch" title="Toggle USD / INR">
+              <input type="checkbox" id="currencyToggle" aria-label="Toggle currency">
+              <span class="slider"></span>
+            </label>
+            <span class="text-xs text-slate-400">INR</span>
+          </div>
+          <div id="rateHint" class="text-[11px] text-slate-400 mb-4"></div>
+
+          <ul class="space-y-4 text-slate-300/90">
+
+            <!-- Portfolio -->
+            <li class="flex justify-between items-center hover:bg-slate-800/50 px-3 py-2 rounded-lg transition-all">
+              <span class="flex items-center gap-2"><i data-lucide="briefcase" class="icon-animate"></i> Portfolio</span>
+              <span class="text-right">
+                <span class="price-old line-through text-slate-500 text-sm mr-2" data-usd="89.99"></span>
+                <span class="price-new font-bold text-emerald-400 text-lg" data-usd="44.99"></span>
+              </span>
+            </li>
+
+            <!-- Best Deal -->
+            <li class="relative flex justify-between items-center hover:bg-slate-800/50 px-3 py-2 rounded-lg transition-all border border-emerald-500/40">
+              <span class="flex items-center gap-2"><i data-lucide="bot" class="icon-animate"></i> Portfolio + Chatbot</span>
+              <span class="text-right">
+                <span class="price-old line-through text-slate-500 text-sm mr-2" data-usd="119.99"></span>
+                <span class="price-new font-bold text-yellow-400 text-lg" data-usd="49.99"></span>
+              </span>
+              <span class="absolute -top-2 -right-2 bg-emerald-500 text-black text-xs font-bold px-2 py-0.5 rounded-full shadow">Best Deal!</span>
+            </li>
+
+            <!-- Git Portfolio -->
+            <li class="flex justify-between items-center hover:bg-slate-800/50 px-3 py-2 rounded-lg transition-all">
+              <span class="flex items-center gap-2"><i data-lucide="github" class="icon-animate"></i> Git Portfolio</span>
+              <span class="text-right">
+                <span class="price-old line-through text-slate-500 text-sm mr-2" data-usd="34.99"></span>
+                <span class="price-new font-bold text-emerald-300" data-usd="11.29"></span>
+              </span>
+            </li>
+
+            <!-- Project -->
+            <li class="flex justify-between items-center hover:bg-slate-800/50 px-3 py-2 rounded-lg transition-all">
+              <span class="flex items-center gap-2"><i data-lucide="layers" class="icon-animate"></i> Project</span>
+              <span class="text-right">
+                <span class="price-old line-through text-slate-500 text-sm mr-2" data-usd="29.99"></span>
+                <span class="price-new font-bold text-emerald-300" data-usd="11.29"></span>
+              </span>
+            </li>
+
+            <!-- ATS Resume -->
+            <li class="flex justify-between items-center hover:bg-slate-800/50 px-3 py-2 rounded-lg transition-all">
+              <span class="flex items-center gap-2"><i data-lucide="file-text" class="icon-animate"></i> ATS Resume</span>
+              <span class="text-right">
+                <span class="price-old line-through text-slate-500 text-sm mr-2" data-usd="24.99"></span>
+                <span class="price-new font-bold text-amber-400" data-usd="9.99"></span>
+              </span>
+            </li>
+
+            <!-- Mega Combo -->
+            <li class="relative flex justify-between items-center hover:bg-slate-800/70 px-3 py-3 rounded-lg transition-all border border-pink-500/60 bg-pink-500/10 shadow-md shadow-pink-500/20">
+              <span class="flex items-center gap-2 text-pink-300 font-semibold">
+                <i data-lucide="sparkles" class="icon-animate"></i>
+                Mega Combo: Portfolio + Git Portfolio + Project + ATS Resume
+              </span>
+              <span class="text-right">
+                <span class="price-old line-through text-slate-500 text-sm mr-2" data-usd="180.00"></span>
+                <span class="price-new font-bold text-pink-400 text-xl" data-usd="69.99"></span>
+              </span>
+              <span class="absolute -top-3 -right-3 bg-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md">Save 62% 🎉</span>
+            </li>
+          </ul>
+
+          <div class="mt-7">
+            <a href="https://wa.me/919666612820" target="_blank"
+              class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white
+              font-semibold px-5 py-3 rounded-lg transition-all duration-300 shadow-lg shadow-green-500/30">
+              <i data-lucide="message-circle" class="icon-animate"></i>
+              Chat on WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-8">
+    <div class="max-w-7xl mx-auto px-4 text-sm text-slate-400">
+      Built by Career Canvas: Build. Showcase. Get Hired.
+    </div>
+  </footer>
+
+  <!-- Chatbot Floating Button -->
+  <button id="chatFab" class="chat-fab rounded-full bg-[color:var(--indigo)] p-4 shadow-lg hover:bg-[color:var(--indigo-600)] transition focus-ring text-white" aria-label="Open assistant">
+    <i data-lucide="message-circle"></i>
+  </button>
+
+  <!-- Chatbot Panel -->
+  <section id="chatPanel" class="chat-panel hidden" aria-label="Chatbot panel">
+    <div class="p-3 border-b border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2"><i data-lucide="bot" class="opacity-80"></i><h2 class="font-semibold text-sm">Voice Assistant</h2></div>
+      <button id="closeChat" class="p-2 rounded-lg hover:bg-slate-800 focus-ring" aria-label="Close chat"><i data-lucide="x"></i></button>
+    </div>
+    <div id="chatLog" class="chat-log overflow-y-auto p-3 space-y-2 no-scrollbar"></div>
+    <div class="p-3 border-t border-slate-800 space-y-2">
+      <div class="flex items-center gap-2">
+        <input id="chatInput" class="flex-1 rounded-lg bg-slate-900/70 border border-slate-700 px-3 py-2 focus-ring text-sm" placeholder="Ask about portfolios, Git Portfolios, resumes, GitHub, demos, or feedback…" />
+        <button id="sendBtn" class="px-3 py-2 rounded-lg bg-[color:var(--indigo)] hover:bg-[color:var(--indigo-600)] transition focus-ring text-white"><i data-lucide="send"></i></button>
+      </div>
+      <div class="flex items-center gap-2 text-xs">
+        <button id="micBtn" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition focus-ring" aria-pressed="false"><span class="inline-flex items-center gap-1"><i data-lucide="mic"></i> Mic</span></button>
+        <button id="speakToggle" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition focus-ring" aria-pressed="true"><span class="inline-flex items-center gap-1"><i data-lucide="volume-2"></i> Speak On</span></button>
+        <button id="clearChat" class="ml-auto px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition focus-ring"><i data-lucide="trash-2"></i></button>
+        <details class="ml-2">
+          <summary class="cursor-pointer text-slate-300/90">Settings</summary>
+          <div class="mt-2 text-sm text-slate-300/80 space-y-2">
+            <label class="block"><span class="block mb-1">Custom API endpoint (optional)</span>
+              <input id="apiEndpoint" class="w-full rounded bg-slate-900/70 border border-slate-700 px-2 py-1" placeholder="https://your-endpoint.example.com/chat" />
+            </label>
+            <p>Endpoint should reply to <code>POST</code> <small>{"message": "..."}</small> with <code>{"reply":"..."}</code>.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin PIN Modal -->
+  <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 w-80 text-center space-y-4">
+      <h3 class="text-lg font-semibold">Admin Access</h3>
+      <input id="adminPinInput" type="password" placeholder="Enter PIN"
+        class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-center" />
+      <div class="flex justify-center gap-3">
+        <button id="adminSubmit" class="px-4 py-2 bg-[color:var(--indigo)] hover:bg-[color:var(--indigo-600)] rounded-lg text-white">Unlock</button>
+        <button id="adminCancel" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg">Cancel</button>
+      </div>
+      <p class="text-xs text-slate-400">Press <strong>SHIFT + A</strong> anytime to open.</p>
+    </div>
+  </div>
+
+  <!-- Admin Tools -->
+  <div class="admin-tools">
+    <div class="rounded-full bg-slate-900/80 border border-slate-700 px-3 py-2 shadow-md flex items-center gap-2">
+      <span class="text-xs text-slate-300">Admin On</span>
+      <button id="resetHidden" class="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 border border-slate-700">Reset</button>
+      <button id="openTrash" class="px-2 py-1 text-xs rounded bg-[color:var(--indigo)] hover:bg-[color:var(--indigo-600)] text-white">Trash</button>
+    </div>
+  </div>
+
+  <!-- Trash Modal -->
+  <div id="trashModal" class="modal">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative bg-slate-900 border border-slate-700 rounded-xl w-[min(720px,92vw)] max-h-[80vh] overflow-hidden">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="trash-2"></i>
+          <h3 class="font-semibold">Trash</h3>
+          <span id="trashCount" class="text-xs text-slate-400 ml-1"></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="emptyTrash" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs">Empty Trash</button>
+          <button id="closeTrash" class="px-3 py-1.5 rounded bg-[color:var(--indigo)] hover:bg-[color:var(--indigo-600)] text-white text-xs">Close</button>
+        </div>
+      </div>
+      <div class="p-4 overflow-y-auto" style="max-height: calc(80vh - 64px);" id="trashList"></div>
+    </div>
+  </div>
+
+<script>
+/* ==========================
+   1) DATA (EDIT THESE)
+========================== */
+const DATA = {
+  portfolios: [
+    { title: "Ruthik — Portfolio", url: "Ruthik/index.html", note: "Creative projects", tags: ["Portfolio","Local"], thumb:"" },
+    { title: "Sreeja — Portfolio", url: "Sreeja/index.html", note: "Web apps & APIs", tags: ["Portfolio","Local"], thumb:"" },
+    { title: "Amulya — Portfolio", url: "Amulya/index.html", note: "Frontend showcase", tags: ["Portfolio","Local"], thumb:"" },
+    { title: "Amaan — Portfolio", url: "Amaan/index.html", note: "Dashboards & SQL", tags: ["Portfolio","Local"], thumb:"" },
+    { title: "Meghana — Portfolio", url: "Meghana/index.html", note: "Java & Spring Boot", tags: ["Portfolio","Local"], thumb:"" },
+  ],
+  gitportfolios: [
+    { title: "Git Portfolio — Amulya",  url: "https://github.com/Amulyagoli",     note:"GitHub Portfolio Enhancer", tags:["Git Portfolio","Profile"] },
+    { title: "Git Portfolio — Sreeja",  url: "https://github.com/SreejaAkuthota",  note:"GitHub Portfolio Enhancer", tags:["Git Portfolio","Profile"] },
+    { title: "Git Portfolio — Sathish", url: "https://github.com/sathishlella",    note:"GitHub Portfolio Enhancer", tags:["Git Portfolio","Profile"] },
+  ],
+  github: [
+    { title: "Financial Risk Analyzer", url: "https://github.com/Amaan-mohammed1/financial_risk_analyzer", note:"scikit-learn + Dash + Power BI", tags:["GitHub","Python","Dash","SKLearn","Power BI"] },
+    { title: "Marketing Campaign ROI Tracker", url: "https://github.com/Amaan-mohammed1/marketing-campaign-roi-tracker", note:"Python + Node.js + PostgreSQL server", tags:["GitHub","ML"] },
+    { title: "music-recommender", url: "https://github.com/example/music-recommender", note:"SVM + Streamlit", tags:["GitHub","ML"] },
+  ],
+  streamlit: [
+    { title: "Live Demo Project 1", url: "https://ai-resume-coverletter-generator.streamlit.app/", note: "Job-Matched Resume & Cover Letter Generator", tags:["ML","NLP","LLM","AI"] },
+    { title: "Live Demo Project 2", url: "https://huggingface.co/spaces/Sreeja007/genai-pdf-qa-chatbot-groq", note: "Smart PDF Q&A with Trusted Citations", tags:["Embeddings","Vector DB","RAG","Retrieval"] },
+    { title: "Live Demo Project 3", url: "https://ai-review-sentiment-dashboard.streamlit.app/", note: "AI Review Sentiment Dashboard", tags:["NLP","Visualization"] },
+    { title: "Live Demo Project 4", url: "https://amaan-mohammed1.github.io/healthcare-claims-insights-dashboard/dashboard.html", note: "Healthcare Claims Insights Dashboard", tags:["BI","SQL","Tableau"] },
+    { title: "Live Demo Project 5", url: "https://medical-coding-tool.vercel.app/", note: "Medical Coding Tool", tags:["Medical coding","CPT-10"] },
+    { title: "Live Demo Project 6", url: "https://amaan-mohammed1.github.io/mental-health-prediction-dashboard/dashboard.html", note: "Mental Health Prediction Dashboard", tags:["Python","Machine Learning","Orange","Jupyter"] },
+  ],
+  resume: [
+    { title: "Resume — Meghana (ATS)", url: "assets/Meghana_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
+    { title: "Resume — Amaan (ATS)", url: "assets/Amaan_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
+    { title: "Resume — Kiran (ATS)", url: "assets/Kiran_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
+    { title: "Resume — Ravi (ATS)", url: "assets/Ravi_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
+    { title: "Resume — Hema (ATS)", url: "assets/Hema_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
+    { title: "Resume — Kishor (ATS)", url: "assets/Kishor_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
+  ],
+  feedbacks: [
+    { client:"Client A", project:"SaaS Revamp", rating:5, text:"Delivered ahead of schedule with pixel-perfect UI. Our users love the new flow.", tags:["UI","Speed","Quality"], date:"2025-09-12" },
+    { client:"Client B", project:"eCommerce Growth", rating:5, text:"Checkout optimization boosted conversion by 22%. Clear communication throughout.", tags:["Conversion","A/B"], date:"2025-08-03" },
+    { client:"Client C", project:"Healthcare Portal", rating:4, text:"Great HIPAA-aware design and smooth data sync. Minor tweaks handled fast.", tags:["Compliance","Integration"], date:"2025-07-21" },
+    { client:"Client D", project:"BI Dashboards", rating:5, text:"Actionable KPIs with blazing load times. Leadership is thrilled.", tags:["Analytics","Performance"], date:"2025-06-30" },
+    { client:"Client E", project:"EduTech Marketplace", rating:5, text:"Scalable architecture and polished UX. Partner onboarding is seamless.", tags:["Scale","UX"], date:"2025-05-17" },
+  ],
+};
+
+/* ==========================
+   2) Icons + Lottie + Blobs
+========================== */
+document.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
+
+let blobsStarted = false;
+window.addEventListener('load', () => {
+  if (window.lottie) {
+    const confettiEl = document.getElementById('confetti');
+    if (confettiEl) {
+      lottie.loadAnimation({ container: confettiEl, renderer: 'svg', loop: true, autoplay: true,
+        path: 'https://assets10.lottiefiles.com/packages/lf20_jbrw3hcz.json' });
+    }
+  }
+  if (!blobsStarted && window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    blobsStarted = true;
+    const tl = gsap.timeline({ repeat: -1, yoyo: true, defaults: { duration: 18, ease: "sine.inOut" }});
+    tl.to(".blob--1", { x: 60, y: 20, rotate: 8 })
+      .to(".blob--2", { x: -50, y: -30, rotate: -6 }, "<")
+      .to(".blob--3", { x: 40, y: -40, rotate: 10 }, "<");
+  }
+});
+
+/* ==========================
+   3) Projects: render + stats
+========================== */
+const grid = document.getElementById('grid');
+const counters = {
+  portfolios:     document.getElementById('stat-portfolios'),
+  gitportfolios:  document.getElementById('stat-gitportfolios'),
+  github:         document.getElementById('stat-github'),
+  streamlit:      document.getElementById('stat-streamlit'),
+  resume:         document.getElementById('stat-resume'),
+};
+counters.portfolios.textContent    = DATA.portfolios.length;
+counters.gitportfolios.textContent = DATA.gitportfolios.length;
+counters.github.textContent        = DATA.github.length;
+counters.streamlit.textContent     = DATA.streamlit.length;
+counters.resume.textContent        = DATA.resume.length;
+
+function makeCard(item, kind){
+  const emoji = kind === 'portfolio'    ? '💼'
+               : kind === 'gitportfolios'? '🐙'
+               : kind === 'github'       ? '👩🏻‍💻'
+               : kind === 'streamlit'    ? '🟣'
+               : kind === 'resume'       ? '📄'
+               : '🟣';
+  const badge = kind.charAt(0).toUpperCase() + kind.slice(1);
+  const tags = (item.tags||[]).map(t=>`<span class="px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-xs">${t}</span>`).join(' ');
+  const thumb = item.thumb ? `<img alt="" src="${item.thumb}" class="w-full h-36 object-cover rounded-xl mb-3 opacity-90">` : '';
+  const card = document.createElement('a');
+  card.href = item.url; card.target = "_blank"; card.rel="noopener";
+  card.setAttribute('data-kind', kind);
+  card.setAttribute('data-search', `${item.title} ${(item.tags||[]).join(' ')} ${item.note||''}`.toLowerCase());
+  card.className = "relative block rounded-2xl bg-slate-900/60 border border-slate-800 p-4 hover:border-[color:var(--indigo)]/50 transition tilt shine";
+  card.innerHTML = `
+    <div class="absolute right-3 top-3 px-2 py-0.5 rounded-full bg-[color:var(--indigo)]/90 text-xs">${badge}</div>
+    ${thumb}
+    <div class="flex items-center gap-2 mb-1">
+      <div class="text-lg">${emoji}</div>
+      <h3 class="font-semibold leading-tight">${item.title}</h3>
+    </div>
+    <p class="text-sm text-slate-300/85">${item.note||''}</p>
+    <div class="mt-3 flex gap-2 flex-wrap">${tags}</div>
+  `;
+  let rafId = null;
+  function onMove(e){
+    if (rafId) return;
+    rafId = requestAnimationFrame(()=>{
+      const r = card.getBoundingClientRect();
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      const rx = ((y/r.height) - 0.5) * -6;
+      const ry = ((x/r.width) - 0.5) *  6;
+      card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(8px)`;
+      rafId = null;
+    });
+  }
+  card.addEventListener('mousemove', onMove);
+  card.addEventListener('mouseleave', ()=> card.style.transform = "");
+  return card;
+}
+function renderProjects(){
+  grid.innerHTML = "";
+  DATA.portfolios.forEach(i=>grid.appendChild(makeCard(i,'portfolio')));
+  DATA.gitportfolios.forEach(i=>grid.appendChild(makeCard(i,'gitportfolios')));
+  DATA.github.forEach(i=>grid.appendChild(makeCard(i,'github')));
+  DATA.streamlit.forEach(i=>grid.appendChild(makeCard(i,'streamlit')));
+  DATA.resume.forEach(i=>grid.appendChild(makeCard(i,'resume')));
+}
+renderProjects();
+
+/* ==========================
+   4) Filters & Search
+========================== */
+const filterBtns = document.querySelectorAll('.filter-btn');
+let currentFilter = 'all';
+filterBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    filterBtns.forEach(b=>b.classList.remove('bg-[color:var(--indigo)]','hover:bg-[color:var(--indigo-600)]','text-white'));
+    filterBtns.forEach(b=>b.classList.add('bg-slate-800','hover:bg-slate-700'));
+    btn.classList.add('bg-[color:var(--indigo)]','hover:bg-[color:var(--indigo-600)]','text-white');
+    btn.classList.remove('bg-slate-800','hover:bg-slate-700');
+    currentFilter = btn.dataset.filter;
+    applyFilterSearch();
+  });
+});
+const searchInput = document.getElementById('search');
+let searchTimer = null;
+searchInput.addEventListener('input', ()=>{
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(applyFilterSearch, 120);
+});
+function applyFilterSearch(){
+  const q = (searchInput.value || "").toLowerCase();
+  [...grid.children].forEach(card=>{
+    const kind = card.getAttribute('data-kind');
+    const s = card.getAttribute('data-search');
+    const matchesKind  = (currentFilter === 'all') || (currentFilter === kind);
+    const matchesQuery = !q || s.includes(q);
+    card.style.display = (matchesKind && matchesQuery) ? "" : "none";
+  });
+}
+
+/* ==========================
+   5) Chatbot (voice + speak)
+========================== */
+const chatFab = document.getElementById('chatFab');
+const chatPanel = document.getElementById('chatPanel');
+const closeChat = document.getElementById('closeChat');
+const chatLog = document.getElementById('chatLog');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const micBtn = document.getElementById('micBtn');
+const speakToggleBtn = document.getElementById('speakToggle');
+const clearChatBtn = document.getElementById('clearChat');
+const apiEndpoint = document.getElementById('apiEndpoint');
+
+let speakEnabled = true;
+let recognizer = null; // declare ONCE
+let listening = false;
+const MAX_MESSAGES = 50;
+
+function trimLog(){
+  while (chatLog.children.length > MAX_MESSAGES){
+    chatLog.removeChild(chatLog.firstChild);
+  }
+}
+function addMsg(text, who='bot'){
+  const wrap = document.createElement('div');
+  wrap.className = `max-w-[85%] rounded-xl px-3 py-2 text-sm ${
+    who==='user' ? 'bg-[color:var(--indigo)]/90 ml-auto text-white' : 'bg-slate-800/80 border border-slate-700'
+  }`;
+  wrap.textContent = text;
+  chatLog.appendChild(wrap);
+  trimLog();
+  chatLog.scrollTop = chatLog.scrollHeight;
+
+  if (who==='bot' && speakEnabled && 'speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = 1.0; utter.pitch = 1.0;
+    window.speechSynthesis.speak(utter);
+  }
+}
+function localBotReply(message){
+  const m = message.toLowerCase();
+  if (m.includes('git portfolio') || m.includes('gitport')) {
+    const list = DATA.gitportfolios.map(p=>`• ${p.title}`).join('\n');
+    return `You have ${DATA.gitportfolios.length} Git Portfolios:\n${list}`;
+  }
+  if (m.includes('portfolio')) {
+    const list = DATA.portfolios.map(p=>`• ${p.title}`).join('\n');
+    return `You have ${DATA.portfolios.length} portfolios:\n${list}`;
+  }
+  if (m.includes('resume')) {
+    const list = DATA.resume.map(r=>`• ${r.title}`).join('\n');
+    return `You have ${DATA.resume.length} resumes:\n${list}`;
+  }
+  if (m.includes('github')) {
+    const list = DATA.github.map(g=>`• ${g.title}`).join('\n');
+    return `You list ${DATA.github.length} GitHub repos:\n${list}`;
+  }
+  if (m.includes('demo') || m.includes('streamlit')) {
+    const list = DATA.streamlit.map(s=>`• ${s.title}`).join('\n');
+    return `You have ${DATA.streamlit.length} live Streamlit demos:\n${list}`;
+  }
+  if (m.includes('feedback') || m.includes('review') || m.includes('testimonial')) {
+    const best = (getAllFeedback().slice(0,3).map(f=>`• ${f.client} (${f.rating}/5): ${f.text.slice(0,60)}…`)).join('\n');
+    return `Recent feedback:\n${best}`;
+  }
+  if (m.includes('filter') || m.includes('search')) {
+    return `Use the filter chips and search box to narrow results.`;
+  }
+  if (m.includes('how') && m.includes('add')) {
+    return `Edit the DATA section. Add objects with {title, url, note, tags}. For feedback: {client, project, rating, text, tags, date}.`;
+  }
+  return `Ask me about portfolios, Git Portfolios, resumes, GitHub repos, Streamlit demos, or customer feedback.`;
+}
+async function sendMessage(){
+  const msg = chatInput.value.trim();
+  if (!msg) return;
+  addMsg(msg, 'user');
+  chatInput.value = "";
+
+  const endpoint = apiEndpoint?.value?.trim();
+  if (endpoint) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(()=>controller.abort(), 8000);
+      const res = await fetch(endpoint, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ message: msg }),
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+      const data = await res.json().catch(()=> ({}));
+      addMsg(data?.reply || 'No reply from custom API. Using local assistant…');
+      if (!data?.reply) addMsg(localBotReply(msg));
+      return;
+    } catch(e){
+      addMsg('Could not reach custom API. Using local assistant instead.');
+    }
+  }
+  addMsg(localBotReply(msg));
+}
+sendBtn.addEventListener('click', sendMessage);
+chatInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendMessage(); });
+chatFab.addEventListener('click', ()=>{
+  chatPanel.classList.toggle('hidden');
+  if(!chatPanel.classList.contains('hidden')) chatInput.focus();
+});
+closeChat.addEventListener('click', ()=> chatPanel.classList.add('hidden'));
+clearChatBtn.addEventListener('click', ()=> { chatLog.innerHTML=''; });
+
+speakToggleBtn.addEventListener('click', ()=>{
+  speakEnabled = !speakEnabled;
+  speakToggleBtn.setAttribute('aria-pressed', String(speakEnabled));
+  speakToggleBtn.innerHTML = `<span class="inline-flex items-center gap-1"><i data-lucide="${speakEnabled?'volume-2':'volume-x'}"></i> ${speakEnabled?'Speak On':'Speak Off'}</span>`;
+  if (window.lucide) lucide.createIcons();
+  if (!speakEnabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+});
+function initRecognizer(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const r = new SR();
+  r.lang = 'en-US';
+  r.interimResults = false;
+  r.maxAlternatives = 1;
+  r.addEventListener('result', (e)=>{
+    const text = e.results[0][0].transcript;
+    chatInput.value = text; sendMessage();
+  });
+  r.addEventListener('end', ()=>{
+    listening = false;
+    micBtn.setAttribute('aria-pressed','false');
+    micBtn.innerHTML = `<span class="inline-flex items-center gap-1"><i data-lucide="mic"></i> Mic</span>`;
+    if (window.lucide) lucide.createIcons();
+  });
+  r.addEventListener('error', ()=>{
+    listening = false;
+    micBtn.setAttribute('aria-pressed','false');
+    micBtn.innerHTML = `<span class="inline-flex items-center gap-1"><i data-lucide="mic"></i> Mic</span>`;
+    if (window.lucide) lucide.createIcons();
+  });
+  return r;
+}
+recognizer = initRecognizer(); // fixed: no duplicate let
+micBtn.addEventListener('click', ()=>{
+  if (!recognizer) { addMsg("Voice input not supported in this browser."); return; }
+  if (listening) { recognizer.stop(); return; }
+  try {
+    recognizer.start(); listening = true;
+    micBtn.setAttribute('aria-pressed','true');
+    micBtn.innerHTML = `<span class="inline-flex items-center gap-1"><i data-lucide="mic-off"></i> Stop</span>`;
+    if (window.lucide) lucide.createIcons();
+  } catch(e){ addMsg("Mic permission denied or already active."); }
+});
+
+/* ==========================
+   6) Feedback + Admin + Trash
+========================== */
+const FB_STORAGE    = "CareerCanvas_feedbacks_v1";
+const HIDE_STORAGE  = "CareerCanvas_feedbacks_hidden_v1";
+const TRASH_STORAGE = "CareerCanvas_feedbacks_trash_v1";
+const ADMIN_PIN     = "12820";
+
+const uid = () => 'fb_' + Math.random().toString(36).slice(2) + Date.now();
+DATA.feedbacks = DATA.feedbacks.map(f => ({ id: f.id || uid(), source: f.source || 'seed', ...f }));
+
+const getHiddenIds = () => { try { return JSON.parse(localStorage.getItem(HIDE_STORAGE) || "[]"); } catch { return []; } };
+const setHiddenIds = (arr) => localStorage.setItem(HIDE_STORAGE, JSON.stringify(arr));
+const getStoredFeedback = () => { try { return JSON.parse(localStorage.getItem(FB_STORAGE) || "[]"); } catch { return []; } };
+const setStoredFeedback = (list) => localStorage.setItem(FB_STORAGE, JSON.stringify(list));
+const getTrash = () => { try { return JSON.parse(localStorage.getItem(TRASH_STORAGE) || "[]"); } catch { return []; } };
+const setTrash = (list) => localStorage.setItem(TRASH_STORAGE, JSON.stringify(list));
+
+function getAllFeedback(){
+  const hidden = new Set(getHiddenIds());
+  const merged = [ ...DATA.feedbacks, ...getStoredFeedback() ].filter(f => !hidden.has(f.id));
+  return merged.sort((a,b)=> new Date(b.date||0) - new Date(a.date||0));
+}
+
+/* Render helpers */
+function stars(n){ const full=Math.max(0,Math.min(5,Number(n)||0)); return `${'★'.repeat(full)}${'☆'.repeat(5-full)}`; }
+function pillTags(tags){ return (tags||[]).map(t=>`<span class="px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-xs">${t}</span>`).join(' '); }
+function feedbackCard(f){
+  const el = document.createElement('div');
+  el.className = "relative fb-deletable rounded-2xl bg-slate-900/70 border border-slate-800 p-4";
+  el.setAttribute('data-id', f.id);
+  el.innerHTML = `
+    <button class="fb-delete px-2 py-1 rounded bg-red-600/80 hover:bg-red-500 text-xs" title="Delete"><i data-lucide="trash-2"></i></button>
+    <div class="flex items-center justify-between mb-2">
+      <div class="font-semibold">${f.client}</div>
+      <div class="text-amber-400 star" aria-label="${f.rating} out of 5">${stars(f.rating)}</div>
+    </div>
+    <div class="text-sm text-slate-300/90 mb-2">${f.project ? `<span class="opacity-80">Project:</span> ${f.project}` : ''}</div>
+    <p class="text-slate-200/90">${f.text}</p>
+    <div class="mt-3 flex gap-2 flex-wrap">${pillTags(f.tags)}</div>
+    <div class="mt-2 text-xs text-slate-400">${f.date ? new Date(f.date).toLocaleDateString() : ''}</div>
+  `;
+  return el;
+}
+function feedbackSlide(f){
+  const wrap = document.createElement('div');
+  wrap.className = "relative fb-deletable min-w-[280px] max-w-[360px] rounded-2xl bg-slate-900/80 border border-slate-800 p-4";
+  wrap.setAttribute('data-id', f.id);
+  wrap.innerHTML = `
+    <button class="fb-delete px-2 py-1 rounded bg-red-600/80 hover:bg-red-500 text-xs" title="Delete"><i data-lucide="trash-2"></i></button>
+    <div class="flex items-center gap-2 mb-1">
+      <i data-lucide="user-check" class="opacity-80"></i>
+      <div class="font-semibold">${f.client}</div>
+      <div class="ml-auto text-amber-400 text-sm star">${stars(f.rating)}</div>
+    </div>
+    <div class="text-xs text-slate-400 mb-2">${f.project || ''}</div>
+    <p class="text-sm text-slate-200/90">${f.text}</p>
+    <div class="mt-3 flex gap-2 flex-wrap">${pillTags(f.tags)}</div>
+  `;
+  return wrap;
+}
+const feedbackTrack = document.getElementById('feedbackTrack');
+const feedbackGrid  = document.getElementById('feedbackGrid');
+
+function renderFeedback(){
+  feedbackTrack.innerHTML = ""; feedbackGrid.innerHTML = "";
+  const all = getAllFeedback();
+  all.forEach(f=>{
+    feedbackTrack.appendChild(feedbackSlide(f));
+    feedbackGrid.appendChild(feedbackCard(f));
+  });
+  if (window.lucide) lucide.createIcons();
+  startMarquee();
+}
+renderFeedback();
+
+/* Marquee */
+let marqueeTween = null;
+function startMarquee(){
+  if (!window.gsap) return;
+  if (marqueeTween) marqueeTween.kill();
+  const viewport = feedbackTrack.parentElement;
+  const vw = viewport.clientWidth;
+
+  let totalW = feedbackTrack.scrollWidth;
+  const originalChildren = [...feedbackTrack.children];
+  while (totalW < vw * 2 && originalChildren.length){
+    originalChildren.forEach(node => feedbackTrack.appendChild(node.cloneNode(true)));
+    totalW = feedbackTrack.scrollWidth;
+  }
+
+  const distance = totalW / 2;
+  gsap.set(feedbackTrack, { x: 0 });
+  marqueeTween = gsap.to(feedbackTrack, {
+    x: -distance, duration: Math.max(20, distance/40), ease: "none", repeat: -1,
+    modifiers: { x: gsap.utils.unitize(x => (parseFloat(x) % -distance)) }
+  });
+}
+
+/* Add Feedback Form */
+const form      = document.getElementById('feedbackForm');
+const fbClient  = document.getElementById('fbClient');
+const fbProject = document.getElementById('fbProject');
+const fbRating  = document.getElementById('fbRating');
+const fbText    = document.getElementById('fbText');
+const fbTags    = document.getElementById('fbTags');
+
+form.addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const item = {
+    id: uid(), source: 'user',
+    client: fbClient.value.trim(),
+    project: (fbProject.value || '').trim(),
+    rating: Number(fbRating.value || 5),
+    text: fbText.value.trim(),
+    tags: (fbTags.value||'').split(',').map(s=>s.trim()).filter(Boolean),
+    date: new Date().toISOString().slice(0,10)
+  };
+  const curr = getStoredFeedback(); curr.unshift(item); setStoredFeedback(curr);
+  console.log("New feedback item (copy to DATA.feedbacks for hardcoding):", item);
+  form.reset(); renderFeedback();
+});
+
+/* Hidden Admin Modal + Shortcuts */
+let adminOn = false;
+const adminModal    = document.getElementById('adminModal');
+const adminPinInput = document.getElementById('adminPinInput');
+const adminSubmit   = document.getElementById('adminSubmit');
+const adminCancel   = document.getElementById('adminCancel');
+const resetHiddenBtn= document.getElementById('resetHidden');
+const openTrashBtn  = document.getElementById('openTrash');
+
+document.addEventListener('keydown', (e)=>{
+  if (e.shiftKey && e.key.toLowerCase() === 'a') {
+    if (!adminOn){ adminPinInput.value = ""; adminModal.classList.remove('hidden'); adminPinInput.focus(); }
+    else { adminOn = false; document.body.classList.remove('admin-on'); alert("🚫 Admin Mode Disabled"); }
+  }
+});
+function closeAdminModal(){ adminModal.classList.add('hidden'); }
+adminSubmit.addEventListener('click', ()=>{
+  if (adminPinInput.value === "12820") { adminOn = true; document.body.classList.add('admin-on'); closeAdminModal(); alert("✅ Admin Mode Enabled"); }
+  else { alert("❌ Wrong PIN"); }
+});
+adminCancel.addEventListener('click', closeAdminModal);
+
+resetHiddenBtn.addEventListener('click', ()=>{
+  if (!adminOn) return;
+  if (!confirm('Restore hidden and clear saved feedback?')) return;
+  localStorage.removeItem(HIDE_STORAGE);
+  localStorage.removeItem(FB_STORAGE);
+  renderFeedback();
+  if (window.lucide) lucide.createIcons();
+});
+
+/* ==========================
+   7) Trash UI + Logic
+========================== */
+const trashModal  = document.getElementById('trashModal');
+const trashList   = document.getElementById('trashList');
+const trashCount  = document.getElementById('trashCount');
+const closeTrash  = document.getElementById('closeTrash');
+const emptyTrash  = document.getElementById('emptyTrash');
+
+openTrashBtn?.addEventListener('click', ()=>{
+  if (!adminOn) return;
+  renderTrash();
+  trashModal.classList.add('show');
+  if (window.lucide) lucide.createIcons();
+});
+closeTrash?.addEventListener('click', ()=> trashModal.classList.remove('show'));
+emptyTrash?.addEventListener('click', ()=>{
+  if (!adminOn) return;
+  if (!confirm('Permanently delete all items in Trash?')) return;
+  setTrash([]); renderTrash();
+});
+
+function moveToTrash(item, fromSource){
+  const t = getTrash();
+  t.unshift({ id: item.id, source: fromSource, payload: item, deletedAt: new Date().toISOString() });
+  setTrash(t);
+}
+function restoreFromTrash(id){
+  const t = getTrash();
+  const idx = t.findIndex(x=>x.id===id);
+  if (idx < 0) return;
+  const entry = t[idx];
+  if (entry.source === 'user'){
+    const list = getStoredFeedback();
+    if (!list.some(x=>x.id===entry.id)) list.unshift(entry.payload);
+    setStoredFeedback(list);
+  } else if (entry.source === 'seed'){
+    const hidden = new Set(getHiddenIds());
+    hidden.delete(entry.id);
+    setHiddenIds([...hidden]);
+  }
+  t.splice(idx,1); setTrash(t);
+  renderFeedback(); renderTrash();
+}
+function deleteForeverFromTrash(id){
+  const t = getTrash();
+  const idx = t.findIndex(x=>x.id===id);
+  if (idx < 0) return;
+  t.splice(idx,1); setTrash(t); renderTrash();
+}
+function renderTrash(){
+  const t = getTrash();
+  trashCount.textContent = `(${t.length})`;
+  trashList.innerHTML = "";
+  if (!t.length){ trashList.innerHTML = `<div class="text-sm text-slate-400">Trash is empty.</div>`; return; }
+  t.forEach(entry=>{
+    const f = entry.payload;
+    const row = document.createElement('div');
+    row.className = "rounded-xl bg-slate-900/70 border border-slate-800 p-4 mb-3";
+    row.setAttribute('data-id', entry.id);
+    row.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div class="text-sm">
+          <div class="font-semibold">${f.client} <span class="text-xs text-slate-400">(${entry.source})</span></div>
+          <div class="text-slate-300/90 text-xs mb-1">${f.project||''} • ${new Date(entry.deletedAt).toLocaleString()}</div>
+          <div class="text-slate-200/90">${f.text}</div>
+          <div class="mt-2 flex gap-2 flex-wrap">${pillTags(f.tags)}</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="trash-restore px-3 py-1.5 rounded bg-[color:var(--emerald)]/80 hover:bg-[color:var(--emerald)] text-xs text-slate-900">Restore</button>
+          <button class="trash-delete px-3 py-1.5 rounded bg-red-600/80 hover:bg-red-600 text-xs">Delete Forever</button>
+        </div>
+      </div>
+    `;
+    trashList.appendChild(row);
+  });
+}
+trashList?.addEventListener('click', (e)=>{
+  const id = e.target.closest('[data-id]')?.getAttribute('data-id');
+  if (!id) return;
+  if (e.target.closest('.trash-restore')) restoreFromTrash(id);
+  if (e.target.closest('.trash-delete')) { if (confirm('Delete this item permanently?')) deleteForeverFromTrash(id); }
+});
+
+/* Delete handler (delegated) — sends to Trash */
+function handleDeleteClick(e){
+  if (!adminOn) return;
+  const btn = e.target.closest('.fb-delete');
+  if (!btn) return;
+  const card = btn.closest('[data-id]');
+  const id = card?.getAttribute('data-id');
+  if (!id) return;
+
+  const userList = getStoredFeedback();
+  const idxUser = userList.findIndex(x => x.id === id);
+  if (idxUser >= 0) {
+    if (!confirm('Move this user-submitted feedback to Trash?')) return;
+    const item = userList[idxUser];
+    userList.splice(idxUser, 1);
+    setStoredFeedback(userList);
+    moveToTrash(item, 'user');
+  } else {
+    if (!confirm('Move this seed feedback to Trash (will be hidden)?')) return;
+    const hidden = new Set(getHiddenIds()); hidden.add(id); setHiddenIds([...hidden]);
+    const seed = DATA.feedbacks.find(x=>x.id===id);
+    if (seed) moveToTrash(seed, 'seed');
+  }
+  renderFeedback();
+  if (window.lucide) lucide.createIcons();
+}
+feedbackGrid.addEventListener('click', handleDeleteClick);
+feedbackTrack.addEventListener('click', handleDeleteClick);
+
+/* Small UX: Esc to close chat/admin/trash */
+document.addEventListener('keydown', (e)=>{
+  if (e.key === 'Escape') {
+    if (!chatPanel.classList.contains('hidden')) chatPanel.classList.add('hidden');
+    if (!adminModal.classList.contains('hidden')) adminModal.classList.add('hidden');
+    if (trashModal.classList.contains('show')) trashModal.classList.remove('show');
+  }
+});
+
+/* Handle resize for marquee recalculation */
+window.addEventListener('load', ()=>{
+  if (marqueeTween) marqueeTween.kill?.();
+  startMarquee();
+});
+
+/* ==========================
+   8) Currency Toggle Logic (USD ⇄ INR)
+========================== */
+const currencyToggle = document.getElementById('currencyToggle');
+const rateHint = document.getElementById('rateHint');
+
+let USD_TO_INR = 90.0;           // Fallback
+let haveLiveRate = false;
+
+const fmtUSD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+const fmtINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+
+function renderPrices(){
+  const useINR = currencyToggle.checked;
+  document.querySelectorAll('.price-old, .price-new').forEach(el=>{
+    const usd = parseFloat(el.getAttribute('data-usd') || '0');
+    if (!useINR){
+      el.textContent = fmtUSD.format(usd);
+    } else {
+      const inr = Math.round(usd * USD_TO_INR);
+      el.textContent = fmtINR.format(inr);
+    }
+  });
+  rateHint.textContent = useINR
+    ? `Showing INR ${haveLiveRate ? `(live rate ≈ ${USD_TO_INR.toFixed(2)} ₹/USD)` : `(fallback rate ≈ ${USD_TO_INR.toFixed(2)} ₹/USD)`}`
+    : `Showing USD prices`;
+}
+
+async function fetchLiveRate(){
+  try {
+    const controller = new AbortController();
+    const to = setTimeout(()=>controller.abort(), 4000);
+    // Free, no-key endpoint with CORS
+    const res = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=INR', { signal: controller.signal });
+    clearTimeout(to);
+    const data = await res.json();
+    const rate = data?.rates?.INR;
+    if (rate && isFinite(rate)) {
+      USD_TO_INR = rate;
+      haveLiveRate = true;
+    }
+  } catch(e){
+    haveLiveRate = false; // keep fallback
+  } finally {
+    renderPrices();
+  }
+}
+
+currencyToggle.addEventListener('change', renderPrices);
+
+// Initial render (USD), then try to fetch live rate
+renderPrices();
+fetchLiveRate();
+</script>
+</body>
+</html>
