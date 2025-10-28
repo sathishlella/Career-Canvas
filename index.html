@@ -173,8 +173,13 @@
           <button data-filter="all" class="filter-btn px-4 py-2 rounded-full bg-[color:var(--indigo)] hover:bg-[color:var(--indigo-600)] hover:scale-105 transition-all duration-300 focus-ring text-white shadow-lg shadow-indigo-500/25">All</button>
           <button data-filter="portfolio" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">Portfolios</button>
           <button data-filter="gitportfolios" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">Git Portfolios</button>
+<<<<<<< HEAD:index.html
           <button data-filter="github" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">GitHub</button>
           <button data-filter="streamlit" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">Live Demos</button>
+=======
+          <button data-filter="streamlit" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">Live Demos</button>
+          <button data-filter="github" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">GitHub</button>
+>>>>>>> bdc52e3... Your latest changes:Dashboard.html
           <button data-filter="resume" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">Resume</button>
         </div>
         <div class="sm:ml-auto w-full sm:w-96 relative">
@@ -194,13 +199,14 @@
           <div id="stat-gitportfolios" class="text-xl font-semibold">–</div>
         </div>
         <div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-center">
-          <div class="text-sm text-slate-400">GitHub</div>
-          <div id="stat-github" class="text-xl font-semibold">–</div>
-        </div>
-        <div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-center">
           <div class="text-sm text-slate-400">Live Demos</div>
           <div id="stat-streamlit" class="text-xl font-semibold">–</div>
         </div>
+        <div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-center">
+          <div class="text-sm text-slate-400">GitHub</div>
+          <div id="stat-github" class="text-xl font-semibold">–</div>
+        </div>
+        
         <div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-center">
           <div class="text-sm text-slate-400">Resume</div>
           <div id="stat-resume" class="text-xl font-semibold">–</div>
@@ -451,46 +457,66 @@
 ========================== */
 const DATA = {
   portfolios: [
-    { title: "Ruthik — Portfolio", url: "Ruthik/index.html", note: "Creative projects", tags: ["Portfolio","Local"], thumb:"" },
-    { title: "Sreeja — Portfolio", url: "Sreeja/index.html", note: "Web apps & APIs", tags: ["Portfolio","Local"], thumb:"" },
-    { title: "Amulya — Portfolio", url: "Amulya/index.html", note: "Frontend showcase", tags: ["Portfolio","Local"], thumb:"" },
-    { title: "Amaan — Portfolio", url: "Amaan/index.html", note: "Dashboards & SQL", tags: ["Portfolio","Local"], thumb:"" },
-    { title: "Meghana — Portfolio", url: "Meghana/index.html", note: "Java & Spring Boot", tags: ["Portfolio","Local"], thumb:"" },
+    { title: "Ruthik — Portfolio", url: "Ruthik/index.html", note: "Creative projects", tags: ["Portfolio","Local"], thumb: "Ruthik/dashboard.mp4" },
+    { title: "Sreeja — Portfolio", url: "Sreeja/index.html", note: "Web apps & APIs", tags: ["Portfolio","Local"], thumb: "Sreeja/Dashboard.mp4" },
+    { title: "Amulya — Portfolio", url: "Amulya/index.html", note: "Frontend showcase", tags: ["Portfolio","Local"], thumb: "Amulya/dashboard.mp4" },
+    { title: "Amaan — Portfolio", url: "Amaan/index.html", note: "Dashboards & SQL", tags: ["Portfolio","Local"], thumb: "Amaan/dashboard.mp4" },
+    { title: "Meghana — Portfolio", url: "Meghana/index.html", note: "Java & Spring Boot", tags: ["Portfolio","Local"], thumb: "Meghana/dashboard.mp4" },
   ],
   gitportfolios: [
-    { title: "Git Portfolio — Amulya",  url: "https://github.com/Amulyagoli",     note:"GitHub Portfolio Enhancer", tags:["Git Portfolio","Profile"] },
-    { title: "Git Portfolio — Sreeja",  url: "https://github.com/SreejaAkuthota",  note:"GitHub Portfolio Enhancer", tags:["Git Portfolio","Profile"] },
-    { title: "Git Portfolio — Sathish", url: "https://github.com/sathishlella",    note:"GitHub Portfolio Enhancer", tags:["Git Portfolio","Profile"] },
+    { title: "Git Portfolio — Amulya",  url: "https://github.com/Amulyagoli",     note:"GitHub Portfolio Enhancer", tags:["Git Portfolio","Profile"],thumb: "Amulya/git_dash.mp4" },
+    { title: "Git Portfolio — Sreeja",  url: "https://github.com/SreejaAkuthota",  note:"GitHub Portfolio Enhancer", tags:["Git Portfolio","Profile"],thumb: "Sreeja/git_dash.mp4" },
+    { title: "Git Portfolio — Sathish", url: "https://github.com/sathishlella",    note:"GitHub Portfolio Enhancer", tags:["Git Portfolio","Profile"],thumb: "Sathish/git_dash.mp4" },
   ],
-  github: [
-    { title: "Financial Risk Analyzer", url: "https://github.com/Amaan-mohammed1/financial_risk_analyzer", note:"scikit-learn + Dash + Power BI", tags:["GitHub","Python","Dash","SKLearn","Power BI"] },
-    { title: "Marketing Campaign ROI Tracker", url: "https://github.com/Amaan-mohammed1/marketing-campaign-roi-tracker", note:"Python + Node.js + PostgreSQL server", tags:["GitHub","ML"] },
-    { title: "music-recommender", url: "https://github.com/example/music-recommender", note:"SVM + Streamlit", tags:["GitHub","ML"] },
-  ],
+
   streamlit: [
+<<<<<<< HEAD:index.html
     { title: "Live Demo Project 1", url: "https://ai-resume-coverletter-generator.streamlit.app/", note: "Job-Matched Resume & Cover Letter Generator", tags:["Live","Streamlit","NLP","LLM","AI"] },
     { title: "Live Demo Project 2", url: "https://huggingface.co/spaces/Sreeja007/genai-pdf-qa-chatbot-groq", note: "Smart PDF Q&A with Trusted Citations — Hosted on Hugging Face", tags:["Live","Hugging Face","RAG","Retrieval"] },
     { title: "Live Demo Project 3", url: "https://ai-review-sentiment-dashboard.streamlit.app/", note: "AI Review Sentiment Dashboard", tags:["Live","Streamlit","NLP","Visualization"] },
     { title: "Live Demo Project 4", url: "https://amaan-mohammed1.github.io/healthcare-claims-insights-dashboard/dashboard.html", note: "Healthcare Claims Insights Dashboard", tags:["Live","GitHub Pages","BI","SQL","Tableau"] },
     { title: "Live Demo Project 5", url: "https://medical-coding-tool.vercel.app/", note: "Medical Coding Tool — Hosted on Vercel", tags:["Live","Vercel","CPT-10"] },
     { title: "Live Demo Project 6", url: "https://amaan-mohammed1.github.io/mental-health-prediction-dashboard/dashboard.html", note: "Mental Health Prediction Dashboard", tags:["Live","GitHub Pages","Python","ML","Orange","Jupyter"] },
+=======
+    { title: "Live Demo Project 1", url: "https://ai-resume-coverletter-generator.streamlit.app/", note: "Job-Matched Resume & Cover Letter Generator", tags:["Live","Streamlit","NLP","LLM","AI"], thumb: "Sreeja/AIresume.mp4" },
+    { title: "Live Demo Project 2", url: "https://huggingface.co/spaces/SathishLella/genai-pdf-qa-chatbot-groq", note: "Smart PDF Q&A with Trusted Citations — Hosted on Hugging Face", tags:["Live","Hugging Face","RAG","Retrieval"], thumb: "Sreeja/genpdf.mp4" },
+    { title: "Live Demo Project 3", url: "https://ai-review-sentiment-dashboard.streamlit.app/", note: "AI Review Sentiment Dashboard", tags:["Live","Streamlit","NLP","Visualization"], thumb: "Sreeja/sentiment.mp4" },
+    { title: "Live Demo Project 4", url: "https://amaan-mohammed1.github.io/healthcare-claims-insights-dashboard/dashboard.html", note: "Healthcare Claims Insights Dashboard", tags:["Live","GitHub Pages","BI","SQL","Tableau"], thumb: "Amaan/hc.mp4" },
+    { title: "Live Demo Project 5", url: "https://medical-coding-tool.vercel.app/", note: "Medical Coding Tool — Hosted on Vercel", tags:["Live","Vercel","CPT-10"], thumb: "Amulya/project.mp4" },
+    { title: "Live Demo Project 6", url: "https://amaan-mohammed1.github.io/mental-health-prediction-dashboard/dashboard.html", note: "Mental Health Prediction Dashboard", tags:["Live","GitHub Pages","Python","ML","Orange","Jupyter"], thumb: "Amaan/mhp.mp4" },
+>>>>>>> bdc52e3... Your latest changes:Dashboard.html
+  ],
+    github: [
+    { title: "Financial Risk Analyzer", url: "https://github.com/Amaan-mohammed1/financial_risk_analyzer", note:"scikit-learn + Dash + Power BI", tags:["GitHub","Python","Dash","SKLearn","Power BI"], thumb: "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2xhbzJiZWU1NzdiMmdzZXBwdXAxc3lvejl1ejE0djJ2NTBtc3M3aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/78XCFBGOlS6keY1Bil/giphy.gif" },
+    { title: "Marketing Campaign ROI Tracker", url: "https://github.com/Amaan-mohammed1/marketing-campaign-roi-tracker", note:"Python + Node.js + PostgreSQL server", tags:["GitHub","ML"], thumb: "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcmFhNHdzZWxkdTQyN2pxaHBwaHFvaWt1dHB6dmRpNW50M254MmExNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/OLPQ6z2hlHmwFc4Hso/giphy.gif" },
+    { title: "music-recommender", url: "https://github.com/example/music-recommender", note:"SVM + Streamlit", tags:["GitHub","ML"], thumb: "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNzU3bTk5OTZxbzkwZjA4bnpnMXB5aDN2cmpiOXR2ZGVmZzU0czFodiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Cc2lafq8xjgu4/giphy.gif" },
   ],
   resume: [
-    { title: "Resume — Meghana (ATS)", url: "assets/Meghana_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
-    { title: "Resume — Amaan (ATS)", url: "assets/Amaan_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
-    { title: "Resume — Kiran (ATS)", url: "assets/Kiran_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
-    { title: "Resume — Ravi (ATS)", url: "assets/Ravi_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
-    { title: "Resume — Hema (ATS)", url: "assets/Hema_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
-    { title: "Resume — Kishor (ATS)", url: "assets/Kishor_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
-  ],
+  { title: "Resume — Meghana (ATS)", url: "https://wa.me/919666612820", locked:true, note:"Locked - $9.99", tags:["Resume","PDF"], thumb: "Resume.gif" },
+  { title: "Resume — Amaan (ATS)", url: "https://wa.me/919666612820", locked:true, note:"Locked - $9.99", tags:["Resume","PDF"], thumb: "resume3.jpg" },
+  { title: "Resume — Kiran (ATS)", url: "https://wa.me/919666612820", locked:true, note:"Locked - $9.99", tags:["Resume","PDF"], thumb: "resume4.jpg" },
+  { title: "Resume — Ravi (ATS)", url: "https://wa.me/919666612820", locked:true, note:"Locked - $9.99", tags:["Resume","PDF"], thumb: "resume5.jpg" },
+  { title: "Resume — Hema (ATS)", url: "https://wa.me/919666612820", locked:true, note:"Locked - $9.99", tags:["Resume","PDF"], thumb: "Resume2.gif" },
+  { title: "Resume — Kishor (ATS)", url: "https://wa.me/919666612820", locked:true, note:"Locked - $9.99", tags:["Resume","PDF"], thumb: "resume.jpg" }
+],
+
   feedbacks: [
+<<<<<<< HEAD:index.html
     { client: "Meghana (Portfolio + ATS)", project: "Career Canvas Portfolio Launch", rating: 5, text: "Clean portfolio + ATS resume combo landed 3 interview calls in 10 days. Highly recommend the Career Canvas demo!", tags: ["Portfolio", "ATS", "Interview Calls", "Hired", "Recommendation"], date: "2025-10-25" },
+=======
+    { client: "Meghana (Portfolio + ATS)", project: "Career Canvas Portfolio Launch", rating: 5, text: "Clean portfolio + ATS resume combo landed 3 interview calls in 10 days and 1 offer. Highly recommend the Career Canvas demo!", tags: ["Portfolio", "ATS", "Interview Calls", "Hired", "Recommendation"], date: "2025-10-25" },
+>>>>>>> bdc52e3... Your latest changes:Dashboard.html
     { client: "Amulya (Git Portfolio)", project: "GitHub Profile Revamp", rating: 5, text: "The Git Portfolio layout showcased my repos perfectly. Shortlisted twice this week. Career Canvas demo is a must-see.", tags: ["Git Portfolio", "GitHub", "Shortlist", "Interview Calls", "Recommendation"], date: "2025-10-12" },
     { client: "Sreeja (Live Demo)", project: "PDF Q&A Chatbot — Live Demo", rating: 5, text: "Shared the live app in applications—got two interviews and strong recruiter feedback. Recommend trying the demo flow.", tags: ["Live Demo", "RAG", "Interview Calls", "Recruiter Interest", "Recommendation"], date: "2025-10-01" },
     { client: "Amaan (Live Demo)", project: "Healthcare Claims Dashboard", rating: 5, text: "The demo link made my analytics story click. Hired as Jr. Data Analyst. Career Canvas demo sold the skills.", tags: ["Live Demo", "Analytics", "Hired", "Dashboard", "Recommendation"], date: "2025-09-18" },
     { client: "Ruthik (Portfolio)", project: "Creative Developer Portfolio", rating: 4, text: "Modern sections + fast load. Got my first interview in a week. The demo walkthrough helped me finalize content.", tags: ["Portfolio", "UI/UX", "Interview Calls", "Performance", "Recommendation"], date: "2025-09-05" },
     { client: "Sathish (Git Portfolio)", project: "Repo Showcases & Readmes", rating: 4, text: "Profile views up and 2 screening calls. The Career Canvas demo clarified repo highlights and metrics.", tags: ["Git Portfolio", "Readme", "Interview Calls", "Visibility", "Recommendation"], date: "2025-08-22" },
+<<<<<<< HEAD:index.html
     { client: "Career Coach — NextStop", project: "Job-Search Readiness", rating: 5, text: "Students using the Portfolio + Live Demo stack receive more callbacks. Strongly suggest running the Career Canvas demo first.", tags: ["Coaching", "Portfolio", "Live Demo", "Interview Calls", "Recommendation"], date: "2025-07-30" }
+=======
+    { client: "Hiring Manager — TechNova", project: "Candidate Submissions Review", rating: 5, text: "Career Canvas portfolios make evaluation easy—clear skills, live links, and context. I recommend candidates include the demo.", tags: ["Hiring", "Recruiter", "Portfolio", "Recommendation", "Clarity"], date: "2025-08-07" },
+    { client: "Career Coach — NextStep", project: "Job-Search Readiness", rating: 5, text: "Students using the Portfolio + Live Demo stack receive more callbacks. Strongly suggest running the Career Canvas demo first.", tags: ["Coaching", "Portfolio", "Live Demo", "Interview Calls", "Recommendation"], date: "2025-07-30" }
+>>>>>>> bdc52e3... Your latest changes:Dashboard.html
   ],
 };
 
@@ -524,27 +550,41 @@ const grid = document.getElementById('grid');
 const counters = {
   portfolios:     document.getElementById('stat-portfolios'),
   gitportfolios:  document.getElementById('stat-gitportfolios'),
-  github:         document.getElementById('stat-github'),
   streamlit:      document.getElementById('stat-streamlit'),
+  github:         document.getElementById('stat-github'),
   resume:         document.getElementById('stat-resume'),
 };
 counters.portfolios.textContent    = DATA.portfolios.length;
 counters.gitportfolios.textContent = DATA.gitportfolios.length;
-counters.github.textContent        = DATA.github.length;
 counters.streamlit.textContent     = DATA.streamlit.length;
+counters.github.textContent        = DATA.github.length;
 counters.resume.textContent        = DATA.resume.length;
 
 function makeCard(item, kind){
   const emoji =
     kind === 'portfolio'     ? '💼' :
+<<<<<<< HEAD:index.html
     kind === 'gitportfolios' ? '👩🏻‍💻' :
     kind === 'github'        ? '🐙' :
     kind === 'streamlit'     ? '<span class="live-dot" title="Live"></span>' :
+=======
+    kind === 'gitportfolios' ? '🐙' :
+    kind === 'streamlit'     ? '<span class="live-dot" title="Live"></span>' :
+    kind === 'github'        ? '👩🏻‍💻' :
+>>>>>>> bdc52e3... Your latest changes:Dashboard.html
     kind === 'resume'        ? '📄' : '🟣';
 
   const badge = kind.charAt(0).toUpperCase() + kind.slice(1);
   const tags = (item.tags||[]).map(t=>`<span class="px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-xs">${t}</span>`).join(' ');
-  const thumb = item.thumb ? `<img alt="" src="${item.thumb}" class="w-full h-36 object-cover rounded-xl mb-3 opacity-90">` : '';
+  let thumb = '';
+  if (item.thumb) {
+    if (typeof item.thumb === 'string' && item.thumb.toLowerCase().endsWith('.mp4')) {
+      // render mp4 as an autoplaying, muted, looping preview
+      thumb = `<video src="${item.thumb}" autoplay muted loop class="w-full h-36 object-cover rounded-xl mb-3 opacity-90"></video>`;
+    } else {
+      thumb = `<img alt="" src="${item.thumb}" class="w-full h-36 object-cover rounded-xl mb-3 opacity-90">`;
+    }
+  }
   const card = document.createElement('a');
   card.href = item.url; card.target = "_blank"; card.rel="noopener";
   card.setAttribute('data-kind', kind);
@@ -580,11 +620,24 @@ function renderProjects(){
   grid.innerHTML = "";
   DATA.portfolios.forEach(i=>grid.appendChild(makeCard(i,'portfolio')));
   DATA.gitportfolios.forEach(i=>grid.appendChild(makeCard(i,'gitportfolios')));
-  DATA.github.forEach(i=>grid.appendChild(makeCard(i,'github')));
   DATA.streamlit.forEach(i=>grid.appendChild(makeCard(i,'streamlit')));
+  DATA.github.forEach(i=>grid.appendChild(makeCard(i,'github')));
   DATA.resume.forEach(i=>grid.appendChild(makeCard(i,'resume')));
+  
 }
 renderProjects();
+// Lock resume cards: show popup instead of opening PDF links
+document.addEventListener('click', function(e){
+  const anchor = e.target.closest('a.cc-card[data-kind="resume"]');
+  if(anchor){
+    e.preventDefault();
+    e.stopPropagation();
+    alert("To unlock this you have to buy the package — $9.99");
+    return false;
+  }
+});
+
+
 
 /* ==========================
    4) Filters & Search
@@ -695,14 +748,21 @@ function localBotReply(message){
     const list = DATA.resume.map(r=>`• ${r.title}`).join('\n');
     return `You have ${DATA.resume.length} resumes:\n${list}`;
   }
-  if (m.includes('github')) {
-    const list = DATA.github.map(g=>`• ${g.title}`).join('\n');
-    return `You list ${DATA.github.length} GitHub repos:\n${list}`;
-  }
   if (m.includes('demo') || m.includes('streamlit') || m.includes('live')) {
     const list = DATA.streamlit.map(s=>`• ${s.title}`).join('\n');
     return `You have ${DATA.streamlit.length} live demos:\n${list}`;
   }
+  if (m.includes('github')) {
+    const list = DATA.github.map(g=>`• ${g.title}`).join('\n');
+    return `You list ${DATA.github.length} GitHub repos:\n${list}`;
+  }
+<<<<<<< HEAD:index.html
+  if (m.includes('demo') || m.includes('streamlit') || m.includes('live')) {
+    const list = DATA.streamlit.map(s=>`• ${s.title}`).join('\n');
+    return `You have ${DATA.streamlit.length} live demos:\n${list}`;
+  }
+=======
+>>>>>>> bdc52e3... Your latest changes:Dashboard.html
   if (m.includes('feedback') || m.includes('review') || m.includes('testimonial')) {
     const best = (getAllFeedback().slice(0,3).map(f=>`• ${f.client} (${f.rating}/5): ${f.text.slice(0,60)}…`)).join('\n');
     return `Recent feedback:\n${best}`;
@@ -1085,7 +1145,7 @@ window.addEventListener('load', ()=>{
 const currencyToggle = document.getElementById('currencyToggle');
 const rateHint = document.getElementById('rateHint');
 
-let USD_TO_INR = 90.0;           // Fallback
+let USD_TO_INR = 90.00;        // Fallback
 let haveLiveRate = false;
 
 const fmtUSD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
