@@ -19,9 +19,9 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
-  :root{
-    --indigo:#6366f1; --indigo-600:#4f46e5; --emerald:#10b981;
-  }
+  :root{ --indigo:#6366f1; --indigo-600:#4f46e5; --emerald:#10b981; }
+
+  /* Background + blobs */
   .animated-bg{
     background:
       radial-gradient(1200px 600px at 80% -10%, rgba(79,70,229,.25), transparent 60%),
@@ -34,6 +34,7 @@
   .blob--2{ width:430px;height:430px;background:#22d3ee;border-radius:60% 40% 30% 70%/60% 30% 70% 40%; bottom:8%;right:10%;}
   .blob--3{ width:380px;height:380px;background:#10b981;border-radius:55% 45% 50% 50%/50% 65% 35% 50%; top:45%;right:25%;}
 
+  /* Cards */
   .tilt{ transform-style:preserve-3d; transition:transform .12s linear; will-change: transform; }
   .tilt:hover{ transform: translateZ(8px) }
   .shine::after{ content:''; position:absolute; inset:-1px; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.08) 50%,transparent 70%); transform:translateX(-150%); transition:transform .6s ease; pointer-events:none; border-radius:inherit;}
@@ -41,20 +42,28 @@
   .divider{ height:1px; background:linear-gradient(90deg,transparent,rgba(148,163,184,.35),transparent);}
   .focus-ring:focus{ outline:3px solid rgba(79,70,229,.55); outline-offset: 2px;}
 
+  /* Chat */
   .chat-fab{ position:fixed; right:1rem; bottom:1rem; z-index:50;}
   .chat-panel{ position:fixed; right:1rem; bottom:5rem; z-index:50; width:340px; max-width:calc(100vw - 2rem); background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border:1px solid rgba(148,163,184,.25); border-radius:1rem; box-shadow:0 10px 40px rgba(0,0,0,.55);}
   .no-scrollbar::-webkit-scrollbar{ display:none;}
   .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none;}
   .chat-log{ max-height: 48vh; }
+
+  /* Feedback marquee */
   .carousel-viewport{ overflow: hidden; }
   .carousel-track{ display:flex; gap:16px; will-change: transform; }
   .star{ filter: drop-shadow(0 1px 0 rgba(0,0,0,.3)); }
+
+  /* Admin delete affordance */
   .fb-delete { position: absolute; right: 10px; top: 10px; opacity: 0; transition: opacity .2s ease; }
   .admin-on .fb-deletable:hover .fb-delete { opacity: 1; }
   .admin-on .fb-delete { opacity: .9; }
+
   .admin-tools{ position: fixed; left: 1rem; bottom: 1rem; z-index:50; display:none; }
   .admin-on .admin-tools{ display:block; }
+
   .feedback-scroll { max-height: 28rem; overflow-y: auto; scroll-behavior: smooth; }
+
   .modal{ position: fixed; inset: 0; display:none; align-items:center; justify-content:center; z-index:60; }
   .modal.show{ display:flex; }
 
@@ -67,19 +76,27 @@
   .logo-tag{font-size:10px;color:#9ca3af}
   @media (max-width:640px){.logo-tag{display:none}}
 
-  /* Currency Toggle (simple switch) */
-  .switch {
-    position: relative; width: 54px; height: 28px; display:inline-block;
-  }
+  /* Currency Toggle switch */
+  .switch { position: relative; width: 54px; height: 28px; display:inline-block; }
   .switch input { display:none; }
-  .slider {
-    position:absolute; cursor:pointer; inset:0; background:#334155; border-radius:9999px; transition:.25s;
-  }
-  .slider:before {
-    position:absolute; content:""; height:22px; width:22px; left:4px; top:3px; background:white; border-radius:50%; transition:.25s;
-  }
+  .slider { position:absolute; cursor:pointer; inset:0; background:#334155; border-radius:9999px; transition:.25s; }
+  .slider:before { position:absolute; content:""; height:22px; width:22px; left:4px; top:3px; background:white; border-radius:50%; transition:.25s; }
   input:checked + .slider { background:#10b981; }
   input:checked + .slider:before { transform: translateX(26px); }
+
+  /* Red blinking LIVE dot */
+  .live-dot {
+    display:inline-block; width:10px; height:10px; border-radius:50%;
+    background:#ef4444;
+    box-shadow: 0 0 0 0 rgba(239,68,68,0.7);
+    animation: live-ping 1.2s infinite;
+    margin-right: 6px;
+  }
+  @keyframes live-ping {
+    0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0.7);   transform: scale(1); }
+    70%  { box-shadow: 0 0 0 10px rgba(239,68,68,0);  transform: scale(1.05); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0);     transform: scale(1); }
+  }
 </style>
 </head>
 <body class="text-slate-100 antialiased bg-slate-950">
@@ -189,7 +206,7 @@
         </div>
       </div>
 
-      <!-- Add Feedback -->
+      <!-- Add Feedback + Pricing -->
       <div class="mt-10 grid md:grid-cols-2 gap-6 items-start">
         <div class="rounded-2xl bg-slate-900/60 border border-slate-800 p-5">
           <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
@@ -204,15 +221,15 @@
               <label class="block text-sm mb-1">Project (optional)</label>
               <input id="fbProject" class="w-full rounded-lg bg-slate-900/70 border border-slate-700 px-3 py-2 focus-ring" />
             </div>
-            <div>
-              <label class="block text-sm mb-1">Tags (comma separated, optional)</label>
-              <input id="fbTags" placeholder="UI, Performance" class="w-full rounded-lg bg-slate-900/70 border border-slate-700 px-3 py-2 focus-ring" />
-            </div>
             <div class="flex items-center gap-3">
               <div class="flex-1">
                 <label class="block text-sm mb-1">Rating (1–5)</label>
                 <input id="fbRating" type="number" min="1" max="5" value="5" class="w-full rounded-lg bg-slate-900/70 border border-slate-700 px-3 py-2 focus-ring" required />
               </div>
+            </div>
+            <div>
+              <label class="block text-sm mb-1">Tags (comma separated, optional)</label>
+              <input id="fbTags" placeholder="Portfolio, Live Demo, Interview" class="w-full rounded-lg bg-slate-900/70 border border-slate-700 px-3 py-2 focus-ring" />
             </div>
             <div>
               <label class="block text-sm mb-1">Feedback</label>
@@ -222,7 +239,7 @@
           </form>
         </div>
 
-        <!-- Deals & Pricing -->
+        <!-- Deals & Pricing with currency toggle -->
         <div class="pricing-card group relative rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900/80 to-slate-800 border border-emerald-500/20 p-6 shadow-2xl overflow-hidden">
           <h3 class="text-2xl font-bold mb-3 flex items-center gap-2 text-slate-100">
             <i data-lucide="zap"></i> Deals & Pricing
@@ -240,8 +257,6 @@
           <div id="rateHint" class="text-[11px] text-slate-400 mb-4"></div>
 
           <ul class="space-y-4 text-slate-300/90">
-
-            <!-- Portfolio -->
             <li class="flex justify-between items-center hover:bg-slate-800/50 px-3 py-2 rounded-lg transition-all">
               <span class="flex items-center gap-2"><i data-lucide="briefcase" class="icon-animate"></i> Portfolio</span>
               <span class="text-right">
@@ -250,7 +265,6 @@
               </span>
             </li>
 
-            <!-- Best Deal -->
             <li class="relative flex justify-between items-center hover:bg-slate-800/50 px-3 py-2 rounded-lg transition-all border border-emerald-500/40">
               <span class="flex items-center gap-2"><i data-lucide="bot" class="icon-animate"></i> Portfolio + Chatbot</span>
               <span class="text-right">
@@ -260,7 +274,6 @@
               <span class="absolute -top-2 -right-2 bg-emerald-500 text-black text-xs font-bold px-2 py-0.5 rounded-full shadow">Best Deal!</span>
             </li>
 
-            <!-- Git Portfolio -->
             <li class="flex justify-between items-center hover:bg-slate-800/50 px-3 py-2 rounded-lg transition-all">
               <span class="flex items-center gap-2"><i data-lucide="github" class="icon-animate"></i> Git Portfolio</span>
               <span class="text-right">
@@ -269,7 +282,6 @@
               </span>
             </li>
 
-            <!-- Project -->
             <li class="flex justify-between items-center hover:bg-slate-800/50 px-3 py-2 rounded-lg transition-all">
               <span class="flex items-center gap-2"><i data-lucide="layers" class="icon-animate"></i> Project</span>
               <span class="text-right">
@@ -278,7 +290,6 @@
               </span>
             </li>
 
-            <!-- ATS Resume -->
             <li class="flex justify-between items-center hover:bg-slate-800/50 px-3 py-2 rounded-lg transition-all">
               <span class="flex items-center gap-2"><i data-lucide="file-text" class="icon-animate"></i> ATS Resume</span>
               <span class="text-right">
@@ -287,7 +298,6 @@
               </span>
             </li>
 
-            <!-- Mega Combo -->
             <li class="relative flex justify-between items-center hover:bg-slate-800/70 px-3 py-3 rounded-lg transition-all border border-pink-500/60 bg-pink-500/10 shadow-md shadow-pink-500/20">
               <span class="flex items-center gap-2 text-pink-300 font-semibold">
                 <i data-lucide="sparkles" class="icon-animate"></i>
@@ -420,12 +430,12 @@ const DATA = {
     { title: "music-recommender", url: "https://github.com/example/music-recommender", note:"SVM + Streamlit", tags:["GitHub","ML"] },
   ],
   streamlit: [
-    { title: "Live Demo Project 1", url: "https://ai-resume-coverletter-generator.streamlit.app/", note: "Job-Matched Resume & Cover Letter Generator", tags:["ML","NLP","LLM","AI"] },
-    { title: "Live Demo Project 2", url: "https://huggingface.co/spaces/Sreeja007/genai-pdf-qa-chatbot-groq", note: "Smart PDF Q&A with Trusted Citations", tags:["Embeddings","Vector DB","RAG","Retrieval"] },
-    { title: "Live Demo Project 3", url: "https://ai-review-sentiment-dashboard.streamlit.app/", note: "AI Review Sentiment Dashboard", tags:["NLP","Visualization"] },
-    { title: "Live Demo Project 4", url: "https://amaan-mohammed1.github.io/healthcare-claims-insights-dashboard/dashboard.html", note: "Healthcare Claims Insights Dashboard", tags:["BI","SQL","Tableau"] },
-    { title: "Live Demo Project 5", url: "https://medical-coding-tool.vercel.app/", note: "Medical Coding Tool", tags:["Medical coding","CPT-10"] },
-    { title: "Live Demo Project 6", url: "https://amaan-mohammed1.github.io/mental-health-prediction-dashboard/dashboard.html", note: "Mental Health Prediction Dashboard", tags:["Python","Machine Learning","Orange","Jupyter"] },
+    { title: "Live Demo Project 1", url: "https://ai-resume-coverletter-generator.streamlit.app/", note: "Job-Matched Resume & Cover Letter Generator", tags:["Live","Streamlit","NLP","LLM","AI"] },
+    { title: "Live Demo Project 2", url: "https://huggingface.co/spaces/Sreeja007/genai-pdf-qa-chatbot-groq", note: "Smart PDF Q&A with Trusted Citations — Hosted on Hugging Face", tags:["Live","Hugging Face","RAG","Retrieval"] },
+    { title: "Live Demo Project 3", url: "https://ai-review-sentiment-dashboard.streamlit.app/", note: "AI Review Sentiment Dashboard", tags:["Live","Streamlit","NLP","Visualization"] },
+    { title: "Live Demo Project 4", url: "https://amaan-mohammed1.github.io/healthcare-claims-insights-dashboard/dashboard.html", note: "Healthcare Claims Insights Dashboard", tags:["Live","GitHub Pages","BI","SQL","Tableau"] },
+    { title: "Live Demo Project 5", url: "https://medical-coding-tool.vercel.app/", note: "Medical Coding Tool — Hosted on Vercel", tags:["Live","Vercel","CPT-10"] },
+    { title: "Live Demo Project 6", url: "https://amaan-mohammed1.github.io/mental-health-prediction-dashboard/dashboard.html", note: "Mental Health Prediction Dashboard", tags:["Live","GitHub Pages","Python","ML","Orange","Jupyter"] },
   ],
   resume: [
     { title: "Resume — Meghana (ATS)", url: "assets/Meghana_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
@@ -436,64 +446,15 @@ const DATA = {
     { title: "Resume — Kishor (ATS)", url: "assets/Kishor_Resume_ATS.pdf", note:"PDF • ATS-optimized", tags:["Resume","PDF"] },
   ],
   feedbacks: [
-  {
-    client: "Meghana (Portfolio + ATS)",
-    project: "Career Canvas Portfolio Launch",
-    rating: 5,
-    text: "Clean portfolio + ATS resume combo landed 3 interview calls in 10 days and strong recruiter feedback. Highly recommend the Career Canvas demo!",
-    tags: ["Portfolio", "ATS", "Interview Calls", "Recruiter Interest", "Recommendation"],
-    date: "2025-10-25"
-  },
-  {
-    client: "Amulya (Git Portfolio)",
-    project: "GitHub Profile Revamp",
-    rating: 5,
-    text: "The Git Portfolio layout showcased my repos perfectly. Shortlisted twice this week. Career Canvas demo is a must-see.",
-    tags: ["Git Portfolio", "GitHub", "Shortlist", "Interview Calls", "Recommendation"],
-    date: "2025-10-12"
-  },
-  {
-    client: "Sreeja (Live Demo)",
-    project: "PDF Q&A Chatbot — Live Demo",
-    rating: 5,
-    text: "Shared the live app in applications—got two interviews and 1 offer. Recommend trying the demo flow.",
-    tags: ["Live Demo", "RAG", "Interview Calls", "Hired", "Recommendation"],
-    date: "2025-10-01"
-  },
-  {
-    client: "Amaan (Live Demo)",
-    project: "Healthcare Claims Dashboard",
-    rating: 5,
-    text: "The demo link made my analytics story click. Hired as Jr. Data Analyst. Career Canvas demo sold the skills.",
-    tags: ["Live Demo", "Analytics", "Hired", "Dashboard", "Recommendation"],
-    date: "2025-09-18"
-  },
-  {
-    client: "Ruthik (Portfolio)",
-    project: "Creative Developer Portfolio",
-    rating: 5,
-    text: "Modern sections + fast load. Got my first interview in a week. The demo walkthrough helped me finalize content.",
-    tags: ["Portfolio", "UI/UX", "Interview Calls", "Performance", "Recommendation"],
-    date: "2025-09-05"
-  },
-  {
-    client: "Sathish (Git Portfolio)",
-    project: "Repo Showcases & Readmes",
-    rating: 5,
-    text: "Profile views up and 2 screening calls. The Career Canvas demo clarified repo highlights and metrics.",
-    tags: ["Git Portfolio", "Readme", "Interview Calls", "Visibility", "Recommendation"],
-    date: "2025-08-22"
-  },
-  {
-    client: "Career Coach — NextStop",
-    project: "Job-Search Readiness",
-    rating: 5,
-    text: "Students using the Portfolio + Live Demo stack receive more callbacks. Strongly suggest running the Career Canvas demo first.",
-    tags: ["Coaching", "Portfolio", "Live Demo", "Interview Calls", "Recommendation"],
-    date: "2025-07-30"
-  }
-],
-
+    { client: "Meghana (Portfolio + ATS)", project: "Career Canvas Portfolio Launch", rating: 5, text: "Clean portfolio + ATS resume combo landed 3 interview calls in 10 days and 1 offer. Highly recommend the Career Canvas demo!", tags: ["Portfolio", "ATS", "Interview Calls", "Hired", "Recommendation"], date: "2025-10-25" },
+    { client: "Amulya (Git Portfolio)", project: "GitHub Profile Revamp", rating: 5, text: "The Git Portfolio layout showcased my repos perfectly. Shortlisted twice this week. Career Canvas demo is a must-see.", tags: ["Git Portfolio", "GitHub", "Shortlist", "Interview Calls", "Recommendation"], date: "2025-10-12" },
+    { client: "Sreeja (Live Demo)", project: "PDF Q&A Chatbot — Live Demo", rating: 5, text: "Shared the live app in applications—got two interviews and strong recruiter feedback. Recommend trying the demo flow.", tags: ["Live Demo", "RAG", "Interview Calls", "Recruiter Interest", "Recommendation"], date: "2025-10-01" },
+    { client: "Amaan (Live Demo)", project: "Healthcare Claims Dashboard", rating: 5, text: "The demo link made my analytics story click. Hired as Jr. Data Analyst. Career Canvas demo sold the skills.", tags: ["Live Demo", "Analytics", "Hired", "Dashboard", "Recommendation"], date: "2025-09-18" },
+    { client: "Ruthik (Portfolio)", project: "Creative Developer Portfolio", rating: 4, text: "Modern sections + fast load. Got my first interview in a week. The demo walkthrough helped me finalize content.", tags: ["Portfolio", "UI/UX", "Interview Calls", "Performance", "Recommendation"], date: "2025-09-05" },
+    { client: "Sathish (Git Portfolio)", project: "Repo Showcases & Readmes", rating: 4, text: "Profile views up and 2 screening calls. The Career Canvas demo clarified repo highlights and metrics.", tags: ["Git Portfolio", "Readme", "Interview Calls", "Visibility", "Recommendation"], date: "2025-08-22" },
+    { client: "Hiring Manager — TechNova", project: "Candidate Submissions Review", rating: 5, text: "Career Canvas portfolios make evaluation easy—clear skills, live links, and context. I recommend candidates include the demo.", tags: ["Hiring", "Recruiter", "Portfolio", "Recommendation", "Clarity"], date: "2025-08-07" },
+    { client: "Career Coach — NextStep", project: "Job-Search Readiness", rating: 5, text: "Students using the Portfolio + Live Demo stack receive more callbacks. Strongly suggest running the Career Canvas demo first.", tags: ["Coaching", "Portfolio", "Live Demo", "Interview Calls", "Recommendation"], date: "2025-07-30" }
+  ],
 };
 
 /* ==========================
@@ -537,12 +498,13 @@ counters.streamlit.textContent     = DATA.streamlit.length;
 counters.resume.textContent        = DATA.resume.length;
 
 function makeCard(item, kind){
-  const emoji = kind === 'portfolio'    ? '💼'
-               : kind === 'gitportfolios'? '🐙'
-               : kind === 'github'       ? '👩🏻‍💻'
-               : kind === 'streamlit'    ? '🟣'
-               : kind === 'resume'       ? '📄'
-               : '🟣';
+  const emoji =
+    kind === 'portfolio'     ? '💼' :
+    kind === 'gitportfolios' ? '🐙' :
+    kind === 'github'        ? '👩🏻‍💻' :
+    kind === 'streamlit'     ? '<span class="live-dot" title="Live"></span>' :
+    kind === 'resume'        ? '📄' : '🟣';
+
   const badge = kind.charAt(0).toUpperCase() + kind.slice(1);
   const tags = (item.tags||[]).map(t=>`<span class="px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-xs">${t}</span>`).join(' ');
   const thumb = item.thumb ? `<img alt="" src="${item.thumb}" class="w-full h-36 object-cover rounded-xl mb-3 opacity-90">` : '';
@@ -628,13 +590,13 @@ const closeChat = document.getElementById('closeChat');
 const chatLog = document.getElementById('chatLog');
 const chatInput = document.getElementById('chatInput');
 const sendBtn = document.getElementById('sendBtn');
-const micBtn = document.getElementById('micBtn');
+const micBtn = document.getElementById('micBtn');          /* single declaration */
 const speakToggleBtn = document.getElementById('speakToggle');
 const clearChatBtn = document.getElementById('clearChat');
 const apiEndpoint = document.getElementById('apiEndpoint');
 
 let speakEnabled = true;
-let recognizer = null; // declare ONCE
+let recognizer = null;
 let listening = false;
 const MAX_MESSAGES = 50;
 
@@ -678,9 +640,9 @@ function localBotReply(message){
     const list = DATA.github.map(g=>`• ${g.title}`).join('\n');
     return `You list ${DATA.github.length} GitHub repos:\n${list}`;
   }
-  if (m.includes('demo') || m.includes('streamlit')) {
+  if (m.includes('demo') || m.includes('streamlit') || m.includes('live')) {
     const list = DATA.streamlit.map(s=>`• ${s.title}`).join('\n');
-    return `You have ${DATA.streamlit.length} live Streamlit demos:\n${list}`;
+    return `You have ${DATA.streamlit.length} live demos:\n${list}`;
   }
   if (m.includes('feedback') || m.includes('review') || m.includes('testimonial')) {
     const best = (getAllFeedback().slice(0,3).map(f=>`• ${f.client} (${f.rating}/5): ${f.text.slice(0,60)}…`)).join('\n');
@@ -692,7 +654,7 @@ function localBotReply(message){
   if (m.includes('how') && m.includes('add')) {
     return `Edit the DATA section. Add objects with {title, url, note, tags}. For feedback: {client, project, rating, text, tags, date}.`;
   }
-  return `Ask me about portfolios, Git Portfolios, resumes, GitHub repos, Streamlit demos, or customer feedback.`;
+  return `Ask me about portfolios, Git Portfolios, resumes, GitHub repos, live demos, or customer feedback.`;
 }
 async function sendMessage(){
   const msg = chatInput.value.trim();
@@ -763,7 +725,8 @@ function initRecognizer(){
   });
   return r;
 }
-recognizer = initRecognizer(); // fixed: no duplicate let
+recognizer = initRecognizer();
+
 micBtn.addEventListener('click', ()=>{
   if (!recognizer) { addMsg("Voice input not supported in this browser."); return; }
   if (listening) { recognizer.stop(); return; }
@@ -908,7 +871,7 @@ const resetHiddenBtn= document.getElementById('resetHidden');
 const openTrashBtn  = document.getElementById('openTrash');
 
 document.addEventListener('keydown', (e)=>{
-  if (e.shiftKey && e.key.toLowerCase() === 'q') {
+  if (e.shiftKey && e.key.toLowerCase() === 'a') {
     if (!adminOn){ adminPinInput.value = ""; adminModal.classList.remove('hidden'); adminPinInput.focus(); }
     else { adminOn = false; document.body.classList.remove('admin-on'); alert("🚫 Admin Mode Disabled"); }
   }
@@ -1063,7 +1026,7 @@ window.addEventListener('load', ()=>{
 const currencyToggle = document.getElementById('currencyToggle');
 const rateHint = document.getElementById('rateHint');
 
-let USD_TO_INR = 90.0;           // Fallback
+let USD_TO_INR = 84.0;           // Fallback
 let haveLiveRate = false;
 
 const fmtUSD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -1089,7 +1052,6 @@ async function fetchLiveRate(){
   try {
     const controller = new AbortController();
     const to = setTimeout(()=>controller.abort(), 4000);
-    // Free, no-key endpoint with CORS
     const res = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=INR', { signal: controller.signal });
     clearTimeout(to);
     const data = await res.json();
@@ -1099,15 +1061,12 @@ async function fetchLiveRate(){
       haveLiveRate = true;
     }
   } catch(e){
-    haveLiveRate = false; // keep fallback
+    haveLiveRate = false;
   } finally {
     renderPrices();
   }
 }
-
 currencyToggle.addEventListener('change', renderPrices);
-
-// Initial render (USD), then try to fetch live rate
 renderPrices();
 fetchLiveRate();
 </script>
