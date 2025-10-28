@@ -24,21 +24,57 @@
   /* Background + blobs */
   .animated-bg{
     background:
-      radial-gradient(1200px 600px at 80% -10%, rgba(79,70,229,.25), transparent 60%),
-      radial-gradient(1000px 600px at -10% 20%, rgba(16,185,129,.18), transparent 60%),
+      radial-gradient(1200px 600px at 80% -10%, rgba(79,70,229,.3), transparent 60%),
+      radial-gradient(1000px 600px at -10% 20%, rgba(16,185,129,.25), transparent 60%),
       linear-gradient(120deg, #0b1021 0%, #0a0f1d 50%, #08101a 100%);
     position: fixed; inset: 0; z-index: -1; overflow: hidden;
   }
-  .blob{ position:absolute; filter:blur(42px); opacity:.35; mix-blend-mode:screen; pointer-events:none; will-change: transform; }
-  .blob--1{ width:520px;height:520px;background:#6366f1;border-radius:42% 58% 63% 37%/41% 46% 54% 59%; top:10%;left:5%;}
-  .blob--2{ width:430px;height:430px;background:#22d3ee;border-radius:60% 40% 30% 70%/60% 30% 70% 40%; bottom:8%;right:10%;}
-  .blob--3{ width:380px;height:380px;background:#10b981;border-radius:55% 45% 50% 50%/50% 65% 35% 50%; top:45%;right:25%;}
+  .animated-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.015;
+    filter: contrast(320%) brightness(100%);
+    mix-blend-mode: overlay;
+  }
+  .blob{ 
+    position: absolute; 
+    filter: blur(42px); 
+    opacity: .35; 
+    mix-blend-mode: screen; 
+    pointer-events: none; 
+    will-change: transform;
+    animation: blobPulse 8s ease-in-out infinite;
+  }
+  @keyframes blobPulse {
+    0%, 100% { transform: scale(1); opacity: .35; }
+    50% { transform: scale(1.05); opacity: .4; }
+  }
+  .blob--1{ width:520px;height:520px;background:#6366f1;border-radius:42% 58% 63% 37%/41% 46% 54% 59%; top:10%;left:5%;animation-delay: 0s;}
+  .blob--2{ width:430px;height:430px;background:#22d3ee;border-radius:60% 40% 30% 70%/60% 30% 70% 40%; bottom:8%;right:10%;animation-delay: -2s;}
+  .blob--3{ width:380px;height:380px;background:#10b981;border-radius:55% 45% 50% 50%/50% 65% 35% 50%; top:45%;right:25%;animation-delay: -4s;}
 
   /* Cards */
-  .tilt{ transform-style:preserve-3d; transition:transform .12s linear; will-change: transform; }
-  .tilt:hover{ transform: translateZ(8px) }
-  .shine::after{ content:''; position:absolute; inset:-1px; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.08) 50%,transparent 70%); transform:translateX(-150%); transition:transform .6s ease; pointer-events:none; border-radius:inherit;}
+  .tilt{ transform-style:preserve-3d; transition:all .3s ease-out; will-change: transform; }
+  .tilt:hover{ transform: translateZ(12px) scale(1.02); box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.3); }
+  .shine::after{ content:''; position:absolute; inset:-1px; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%); transform:translateX(-150%); transition:transform .6s ease; pointer-events:none; border-radius:inherit;}
   .shine:hover::after{ transform:translateX(150%); }
+  
+  /* Card animations */
+  @keyframes cardEntrance {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  #grid > * {
+    animation: cardEntrance 0.6s ease-out;
+    animation-fill-mode: backwards;
+  }
+  #grid > *:nth-child(1) { animation-delay: 0.1s; }
+  #grid > *:nth-child(2) { animation-delay: 0.2s; }
+  #grid > *:nth-child(3) { animation-delay: 0.3s; }
+  #grid > *:nth-child(4) { animation-delay: 0.4s; }
+  #grid > *:nth-child(5) { animation-delay: 0.5s; }
   .divider{ height:1px; background:linear-gradient(90deg,transparent,rgba(148,163,184,.35),transparent);}
   .focus-ring:focus{ outline:3px solid rgba(79,70,229,.55); outline-offset: 2px;}
 
@@ -134,15 +170,15 @@
       <!-- Controls -->
       <div class="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div class="flex gap-2 flex-wrap">
-          <button data-filter="all" class="filter-btn px-3 py-1.5 rounded-full bg-[color:var(--indigo)] hover:bg-[color:var(--indigo-600)] transition focus-ring text-white">All</button>
-          <button data-filter="portfolio" class="filter-btn px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 transition focus-ring">Portfolios</button>
-          <button data-filter="gitportfolios" class="filter-btn px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 transition focus-ring">Git Portfolios</button>
-          <button data-filter="github" class="filter-btn px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 transition focus-ring">GitHub</button>
-          <button data-filter="streamlit" class="filter-btn px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 transition focus-ring">Live Demos</button>
-          <button data-filter="resume" class="filter-btn px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 transition focus-ring">Resume</button>
+          <button data-filter="all" class="filter-btn px-4 py-2 rounded-full bg-[color:var(--indigo)] hover:bg-[color:var(--indigo-600)] hover:scale-105 transition-all duration-300 focus-ring text-white shadow-lg shadow-indigo-500/25">All</button>
+          <button data-filter="portfolio" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">Portfolios</button>
+          <button data-filter="gitportfolios" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">Git Portfolios</button>
+          <button data-filter="github" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">GitHub</button>
+          <button data-filter="streamlit" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">Live Demos</button>
+          <button data-filter="resume" class="filter-btn px-4 py-2 rounded-full bg-slate-800/90 hover:bg-slate-700 hover:scale-105 transition-all duration-300 focus-ring hover:shadow-lg hover:shadow-slate-500/20">Resume</button>
         </div>
         <div class="sm:ml-auto w-full sm:w-96 relative">
-          <input id="search" placeholder="Search by title, tag, or note…" class="w-full rounded-xl bg-slate-800/80 border border-slate-700 px-4 py-2 pl-10 focus-ring" />
+          <input id="search" placeholder="Search by title, tag, or note…" class="w-full rounded-xl bg-slate-800/80 border border-slate-700 px-4 py-2.5 pl-10 focus-ring transition-shadow duration-300 hover:shadow-lg hover:shadow-indigo-500/10 focus:shadow-lg focus:shadow-indigo-500/20" />
           <div class="absolute left-3 top-2.5 opacity-70" aria-hidden="true"><i data-lucide="search"></i></div>
         </div>
       </div>
@@ -577,9 +613,31 @@ function applyFilterSearch(){
     const s = card.getAttribute('data-search');
     const matchesKind  = (currentFilter === 'all') || (currentFilter === kind);
     const matchesQuery = !q || s.includes(q);
-    card.style.display = (matchesKind && matchesQuery) ? "" : "none";
+    const shouldShow = matchesKind && matchesQuery;
+    
+    // Smooth transition for filtering
+    if (shouldShow) {
+      card.style.display = "";
+      setTimeout(() => {
+        card.style.opacity = "1";
+        card.style.transform = "scale(1)";
+      }, 50);
+    } else {
+      card.style.opacity = "0";
+      card.style.transform = "scale(0.95)";
+      setTimeout(() => {
+        card.style.display = "none";
+      }, 300);
+    }
   });
 }
+
+// Initialize card transition styles
+[...grid.children].forEach(card => {
+  card.style.transition = "all 0.3s ease-out";
+  card.style.opacity = "1";
+  card.style.transform = "scale(1)";
+});
 
 /* ==========================
    5) Chatbot (voice + speak)
@@ -1026,7 +1084,7 @@ window.addEventListener('load', ()=>{
 const currencyToggle = document.getElementById('currencyToggle');
 const rateHint = document.getElementById('rateHint');
 
-let USD_TO_INR = 90.0;           // Fallback
+let USD_TO_INR = 84.0;           // Fallback
 let haveLiveRate = false;
 
 const fmtUSD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -1072,3 +1130,4 @@ fetchLiveRate();
 </script>
 </body>
 </html>
+
